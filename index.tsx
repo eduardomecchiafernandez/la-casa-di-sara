@@ -36,7 +36,7 @@ interface AppData {
 // Translations
 const translations = {
   it: {
-    appTitle: 'Gestione Casa di Riposo',
+    appTitle: 'La Casa di Sara',
     appSubtitle: 'Prendersi cura di chi ne ha più bisogno 💜',
     dashboard: 'Pannello',
     residents: 'Ospiti',
@@ -92,10 +92,13 @@ const translations = {
     enterName: 'Inserisci un nome',
     needStaffFirst: '⚠️ Devi prima aggiungere membri del personale prima di creare turni. Vai alla scheda Personale per aggiungerli.',
     fullName: 'Nome completo',
-    unknown: 'Sconosciuto'
+    unknown: 'Sconosciuto',
+    installPrompt: '💡 Aggiungi questa app alla schermata Home del tuo iPhone per un accesso rapido!',
+    installInstructions: 'In Safari: tocca il pulsante Condividi (quadrato con freccia) → "Aggiungi a Home"',
+    gotIt: 'Ho capito'
   },
   en: {
-    appTitle: 'Care Home Manager',
+    appTitle: 'Sara\'s Home',
     appSubtitle: 'Caring for those who need it most 💜',
     dashboard: 'Dashboard',
     residents: 'Residents',
@@ -151,7 +154,10 @@ const translations = {
     enterName: 'Please enter a name',
     needStaffFirst: '⚠️ You need to add staff members first before creating shifts. Go to the Staff tab to add them.',
     fullName: 'Full name',
-    unknown: 'Unknown'
+    unknown: 'Unknown',
+    installPrompt: '💡 Add this app to your iPhone Home Screen for quick access!',
+    installInstructions: 'In Safari: tap the Share button (square with arrow) → "Add to Home Screen"',
+    gotIt: 'Got it'
   }
 };
 
@@ -165,13 +171,78 @@ const CareHomeManager: React.FC = () => {
   const [editingStaff, setEditingStaff] = useState<Staff | null>(null);
   const [editingShift, setEditingShift] = useState<Shift | null>(null);
   const [language, setLanguage] = useState<'it' | 'en'>('it');
+  const [showInstallBanner, setShowInstallBanner] = useState(true);
 
   const t = translations[language];
 
   // Load data on mount
   useEffect(() => {
     loadData();
+    setupPWA();
   }, []);
+
+  const setupPWA = () => {
+    // Set document title
+    document.title = 'La Casa di Sara';
+    
+    // Add PWA meta tags
+    const metaTags = [
+      { name: 'application-name', content: 'La Casa di Sara' },
+      { name: 'apple-mobile-web-app-capable', content: 'yes' },
+      { name: 'apple-mobile-web-app-status-bar-style', content: 'default' },
+      { name: 'apple-mobile-web-app-title', content: 'La Casa di Sara' },
+      { name: 'mobile-web-app-capable', content: 'yes' },
+      { name: 'theme-color', content: '#9333ea' }
+    ];
+
+    metaTags.forEach(({ name, content }) => {
+      let meta = document.querySelector(`meta[name="${name}"]`);
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.name = name;
+        document.head.appendChild(meta);
+      }
+      meta.content = content;
+    });
+
+    // Create and add manifest
+    const manifest = {
+      name: 'La Casa di Sara',
+      short_name: 'Casa Sara',
+      description: 'Gestione Casa di Riposo per Sara',
+      start_url: window.location.href,
+      display: 'standalone',
+      background_color: '#ffffff',
+      theme_color: '#9333ea',
+      icons: [
+        {
+          src: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect fill="%239333ea" width="200" height="200" rx="40"/><text x="100" y="140" font-size="120" text-anchor="middle" fill="white" font-family="Arial">🏠</text></svg>',
+          sizes: '512x512',
+          type: 'image/svg+xml'
+        }
+      ]
+    };
+
+    const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+    const manifestURL = URL.createObjectURL(manifestBlob);
+    
+    let link = document.querySelector('link[rel="manifest"]');
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'manifest';
+      document.head.appendChild(link);
+    }
+    link.href = manifestURL;
+
+    // Add apple touch icon
+    let appleIcon = document.querySelector('link[rel="apple-touch-icon"]');
+    if (!appleIcon) {
+      appleIcon = document.createElement('link');
+      appleIcon.rel = 'apple-touch-icon';
+      document.head.appendChild(appleIcon);
+    }
+    appleIcon.href = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect fill="%239333ea" width="200" height="200" rx="40"/><text x="100" y="140" font-size="120" text-anchor="middle" fill="white" font-family="Arial">🏠</text></svg>';
+  };
 
   const loadData = async () => {
     try {
@@ -359,6 +430,26 @@ const CareHomeManager: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Install Banner */}
+      {showInstallBanner && (
+        <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+          <div className="max-w-7xl mx-auto px-4 py-3">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1">
+                <p className="font-semibold mb-1">{t.installPrompt}</p>
+                <p className="text-sm text-purple-100">{t.installInstructions}</p>
+              </div>
+              <button
+                onClick={() => setShowInstallBanner(false)}
+                className="bg-white/20 hover:bg-white/30 px-3 py-1 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
+              >
+                {t.gotIt}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Navigation */}
       <div className="bg-white border-b border-gray-200">
