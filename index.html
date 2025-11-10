@@ -10,6 +10,7 @@
         <meta name="apple-mobile-web-app-status-bar-style" content="default">
         <meta name="apple-mobile-web-app-title" content="La Casa di Sara">
         <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='80' font-size='80'%3E🐯%3C/text%3E%3C/svg%3E">
+        <link rel="manifest" href="manifest.json">
         <link rel="stylesheet" href="input.css">
         <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
         <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -42,7 +43,8 @@
                     LogOut: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9",
                     Headphones: "M3 18v-6a9 9 0 0 1 18 0v6 M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z",
                     Play: "M5 3l14 9-14 9V3z",
-                    Pause: "M6 4h4v16H6V4z M14 4h4v16h-4V4z"
+                    Pause: "M6 4h4v16H6V4z M14 4h4v16h-4V4z",
+                    Download: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4 M7 10l5 5 5-5 M12 15V3"
                 };
                 return h('svg', {
                     xmlns: "http://www.w3.org/2000/svg",
@@ -346,6 +348,8 @@
                 const [showPwdModal, setShowPwdModal] = useState(false);
                 const [isPlaying, setIsPlaying] = useState(false);
                 const [player, setPlayer] = useState(null);
+                const [deferredPrompt, setDeferredPrompt] = useState(null);
+                const [showInstallButton, setShowInstallButton] = useState(false);
                 const t = translations[lang];
 
                 useEffect(() => {
@@ -400,6 +404,22 @@
                     }
                 }, [authenticated]);
 
+                useEffect(() => {
+                    if (!authenticated) return;
+                    
+                    const handleBeforeInstallPrompt = (e) => {
+                        e.preventDefault();
+                        setDeferredPrompt(e);
+                        setShowInstallButton(true);
+                    };
+
+                    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+                    return () => {
+                        window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+                    };
+                }, [authenticated]);
+
                 const toggleMusic = () => {
                     if (!player) return;
                     if (isPlaying) {
@@ -409,6 +429,19 @@
                         player.playVideo();
                         setIsPlaying(true);
                     }
+                };
+
+                const handleInstallClick = async () => {
+                    if (!deferredPrompt) return;
+                    
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    
+                    if (outcome === 'accepted') {
+                        setShowInstallButton(false);
+                    }
+                    
+                    setDeferredPrompt(null);
                 };
 
                 const getTodayShifts = () => {
@@ -682,6 +715,12 @@
                                 h(Icon,{name:'Calendar',size:48,className:'mx-auto mb-4 opacity-50'}),
                                 h('p',{},t.noShifts)))),
                     h('div', { id: 'youtube-player', style: { display: 'none' } }),
+                    showInstallButton && h('button', {
+                        onClick: handleInstallClick,
+                        className: 'fixed bottom-36 left-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transition-all z-50 pulse',
+                        title: 'Install App'
+                    },
+                        h(Icon, { name: 'Download', size: 24 })),
                     h('button', {
                         onClick: toggleMusic,
                         className: 'fixed bottom-20 left-4 bg-gradient-to-r from-purple-500 to-pink-600 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transition-all z-50',
