@@ -1,0 +1,29 @@
+{
+  "name": "la-casa-di-sara",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [
+    "nursery",
+    "health",
+    "love"
+  ],
+  "homepage": "https://github.com/eduardomecchiafernandez/la-casa-di-sara#readme",
+  "bugs": {
+    "url": "https://github.com/eduardomecchiafernandez/la-casa-di-sara/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eduardomecchiafernandez/la-casa-di-sara.git"
+  },
+  "license": "ISC",
+  "author": "Eduardo Mecchia Fernandez",
+  "type": "commonjs",
+  "main": "index.tsx",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "lucide-react": "^0.553.0",
+    "react": "^19.2.0"
+  }
+}
