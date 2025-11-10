@@ -1,746 +1,1841 @@
 <!DOCTYPE html>
 <html lang="it">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>La Casa di Sara</title>
-        <meta name="description" content="Gestione Casa di Riposo per Sara">
-        <meta name="theme-color" content="#9333ea">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="default">
-        <meta name="apple-mobile-web-app-title" content="La Casa di Sara">
-        <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='80' font-size='80'%3E🐯%3C/text%3E%3C/svg%3E">
-        <link rel="manifest" href="manifest.json">
-        <link rel="stylesheet" href="src/output.css">
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-        <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-        <script src="https://www.youtube.com/iframe_api"></script>
-    </head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>La Casa di Sara</title>
+    <meta name="description" content="Gestione Casa di Riposo per Sara" />
+    <meta name="theme-color" content="#9333ea" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="La Casa di Sara" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='80' font-size='80'%3E🐯%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="stylesheet" href="src/output.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
+  </head>
 
-    <body>
-        <div id="root"></div>
-        <script>
-            const { createElement: h, useState, useEffect } = React;
-            const { render } = ReactDOM;
+  <body>
+    <div id="root"></div>
+    <script>
+      const { createElement: h, useState, useEffect } = React;
+      const { render } = ReactDOM;
 
-            // Icon component
-            const Icon = ({ name, size = 24, className = "" }) => {
-                const icons = {
-                    Home: "M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M9 22V12h6v10",
-                    Users: "M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M23 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75 M9 7a4 4 0 1 1 0 8 4 4 0 0 1 0-8z",
-                    Calendar: "M16 2v4 M8 2v4 M3 10h18 M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z",
-                    UserPlus: "M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M12.5 7a4 4 0 1 1 0 8 4 4 0 0 1 0-8z M20 8v6 M23 11h-6",
-                    Clock: "M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z M12 6v6l4 2",
-                    Plus: "M12 5v14 M5 12h14",
-                    Edit2: "M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z",
-                    Trash2: "M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2 M10 11v6 M14 11v6",
-                    Save: "M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z M17 21v-8H7v8 M7 3v5h8",
-                    X: "M18 6L6 18 M6 6l12 12",
-                    Languages: "M5 8l6 6 M4 14l6-6 M2 5h12 M7 2h1 M14 2h7l-7 20-3.5-9L3 9.5z",
-                    CalendarPlus: "M16 2v4 M8 2v4 M3 10h18 M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z M12 14v6 M9 17h6",
-                    Lock: "M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z M7 11V7a5 5 0 0 1 10 0v4",
-                    LogOut: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9",
-                    Headphones: "M3 18v-6a9 9 0 0 1 18 0v6 M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z",
-                    Play: "M5 3l14 9-14 9V3z",
-                    Pause: "M6 4h4v16H6V4z M14 4h4v16h-4V4z",
-                    Download: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4 M7 10l5 5 5-5 M12 15V3"
-                };
-                return h('svg', {
-                    xmlns: "http://www.w3.org/2000/svg",
-                    width: size,
-                    height: size,
-                    viewBox: "0 0 24 24",
-                    fill: "none",
-                    stroke: "currentColor",
-                    strokeWidth: 2,
-                    strokeLinecap: "round",
-                    strokeLinejoin: "round",
-                    className
-                }, (icons[name] || "").split(' M ').map((d, i) => 
-                    h('path', { key: i, d: i === 0 ? d : 'M ' + d })
-                ));
-            };
+      // Icon component
+      const Icon = ({ name, size = 24, className = "" }) => {
+        const icons = {
+          Home: "M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M9 22V12h6v10",
+          Users:
+            "M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M23 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75 M9 7a4 4 0 1 1 0 8 4 4 0 0 1 0-8z",
+          Calendar:
+            "M16 2v4 M8 2v4 M3 10h18 M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z",
+          UserPlus:
+            "M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M12.5 7a4 4 0 1 1 0 8 4 4 0 0 1 0-8z M20 8v6 M23 11h-6",
+          Clock: "M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z M12 6v6l4 2",
+          Plus: "M12 5v14 M5 12h14",
+          Edit2: "M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z",
+          Trash2:
+            "M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2 M10 11v6 M14 11v6",
+          Save: "M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z M17 21v-8H7v8 M7 3v5h8",
+          X: "M18 6L6 18 M6 6l12 12",
+          Languages:
+            "M5 8l6 6 M4 14l6-6 M2 5h12 M7 2h1 M14 2h7l-7 20-3.5-9L3 9.5z",
+          CalendarPlus:
+            "M16 2v4 M8 2v4 M3 10h18 M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z M12 14v6 M9 17h6",
+          Lock: "M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z M7 11V7a5 5 0 0 1 10 0v4",
+          LogOut:
+            "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9",
+          Headphones:
+            "M3 18v-6a9 9 0 0 1 18 0v6 M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z",
+          Play: "M5 3l14 9-14 9V3z",
+          Pause: "M6 4h4v16H6V4z M14 4h4v16h-4V4z",
+          Download:
+            "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4 M7 10l5 5 5-5 M12 15V3",
+        };
+        return h(
+          "svg",
+          {
+            xmlns: "http://www.w3.org/2000/svg",
+            width: size,
+            height: size,
+            viewBox: "0 0 24 24",
+            fill: "none",
+            stroke: "currentColor",
+            strokeWidth: 2,
+            strokeLinecap: "round",
+            strokeLinejoin: "round",
+            className,
+          },
+          (icons[name] || "")
+            .split(" M ")
+            .map((d, i) => h("path", { key: i, d: i === 0 ? d : "M " + d }))
+        );
+      };
 
-            const translations = {
-                it: {
-                    appTitle: 'La Casa di Sara',
-                    appSubtitle: 'Prendersi cura di chi ne ha più bisogno 💜',
-                    dashboard: 'Pannello',
-                    residents: 'Ospiti',
-                    staff: 'Personale',
-                    shifts: 'Turni',
-                    residentsCount: 'Ospiti',
-                    staffCount: 'Membri del Personale',
-                    todayShifts: 'Turni di Oggi',
-                    todaySchedule: 'Programma di Oggi',
-                    noShiftsToday: 'Nessun turno programmato per oggi',
-                    staffLabel: 'Personale',
-                    noStaffAssigned: 'Nessun personale assegnato',
-                    addResident: 'Aggiungi Ospite',
-                    addStaff: 'Aggiungi Personale',
-                    addShift: 'Aggiungi Turno',
-                    editResident: 'Modifica',
-                    newResident: 'Nuovo',
-                    resident: 'Ospite',
-                    editStaff: 'Modifica',
-                    newStaff: 'Nuovo',
-                    staffMember: 'Membro del Personale',
-                    editShift: 'Modifica',
-                    newShift: 'Nuovo',
-                    shift: 'Turno',
-                    name: 'Nome',
-                    required: '*',
-                    room: 'Camera',
-                    roomNumber: 'Numero camera',
-                    condition: 'Condizione',
-                    conditionPlaceholder: 'es. Alzheimer, Demenza',
-                    specialNeeds: 'Necessità Speciali',
-                    specialNeedsPlaceholder: 'Dieta, mobilità, ecc.',
-                    role: 'Ruolo',
-                    rolePlaceholder: 'es. Operatore, Infermiere',
-                    phone: 'Telefono',
-                    contactNumber: 'Numero di contatto',
-                    date: 'Data',
-                    startTime: 'Ora Inizio',
-                    endTime: 'Ora Fine',
-                    assignStaff: 'Assegna Personale',
-                    notes: 'Note',
-                    notesPlaceholder: 'Note speciali per questo turno...',
-                    save: 'Salva',
-                    cancel: 'Annulla',
-                    loading: 'Caricamento...',
-                    noResidents: 'Nessun ospite ancora. Clicca "Aggiungi Ospite" per iniziare.',
-                    noStaff: 'Nessun membro del personale ancora. Clicca "Aggiungi Personale" per iniziare.',
-                    noShifts: 'Nessun turno programmato ancora. Clicca "Aggiungi Turno" per iniziare.',
-                    deleteConfirmResident: 'Sei sicuro di voler eliminare questo ospite?',
-                    deleteConfirmStaff: 'Sei sicuro di voler eliminare questo membro del personale?',
-                    deleteConfirmShift: 'Sei sicuro di voler eliminare questo turno?',
-                    enterName: 'Inserisci un nome',
-                    needStaffFirst: '⚠️ Devi prima aggiungere membri del personale prima di creare turni.',
-                    fullName: 'Nome completo',
-                    unknown: 'Sconosciuto',
-                    installPrompt: '💡 Aggiungi questa app alla schermata Home!',
-                    installInstructions: 'Safari: Condividi → "Aggiungi a Home"',
-                    gotIt: 'Ho capito',
-                    sendCalendarInvite: 'Invito',
-                    calendarInviteSent: 'Invito creato!',
-                    shiftAt: 'Turno presso',
-                    loginTitle: 'Accedi a La Casa di Sara',
-                    password: 'Password',
-                    login: 'Accedi',
-                    wrongPassword: 'Password errata!',
-                    logout: 'Esci',
-                    helpButton: 'Per aiuto contatta Edu',
-                    changePassword: 'Cambia Password',
-                    currentPassword: 'Password Attuale',
-                    newPassword: 'Nuova Password',
-                    confirmPassword: 'Conferma Password',
-                    passwordsNoMatch: 'Le password non corrispondono',
-                    passwordChanged: 'Password cambiata con successo!',
-                    passwordTooShort: 'La password deve essere almeno 4 caratteri'
+      const translations = {
+        it: {
+          appTitle: "La Casa di Sara",
+          appSubtitle: "Prendersi cura di chi ne ha più bisogno 💜",
+          dashboard: "Pannello",
+          residents: "Ospiti",
+          staff: "Personale",
+          shifts: "Turni",
+          residentsCount: "Ospiti",
+          staffCount: "Membri del Personale",
+          todayShifts: "Turni di Oggi",
+          todaySchedule: "Programma di Oggi",
+          noShiftsToday: "Nessun turno programmato per oggi",
+          staffLabel: "Personale",
+          noStaffAssigned: "Nessun personale assegnato",
+          addResident: "Aggiungi Ospite",
+          addStaff: "Aggiungi Personale",
+          addShift: "Aggiungi Turno",
+          editResident: "Modifica",
+          newResident: "Nuovo",
+          resident: "Ospite",
+          editStaff: "Modifica",
+          newStaff: "Nuovo",
+          staffMember: "Membro del Personale",
+          editShift: "Modifica",
+          newShift: "Nuovo",
+          shift: "Turno",
+          name: "Nome",
+          required: "*",
+          room: "Camera",
+          roomNumber: "Numero camera",
+          condition: "Condizione",
+          conditionPlaceholder: "es. Alzheimer, Demenza",
+          specialNeeds: "Necessità Speciali",
+          specialNeedsPlaceholder: "Dieta, mobilità, ecc.",
+          role: "Ruolo",
+          rolePlaceholder: "es. Operatore, Infermiere",
+          phone: "Telefono",
+          contactNumber: "Numero di contatto",
+          date: "Data",
+          startTime: "Ora Inizio",
+          endTime: "Ora Fine",
+          assignStaff: "Assegna Personale",
+          notes: "Note",
+          notesPlaceholder: "Note speciali per questo turno...",
+          save: "Salva",
+          cancel: "Annulla",
+          loading: "Caricamento...",
+          noResidents:
+            'Nessun ospite ancora. Clicca "Aggiungi Ospite" per iniziare.',
+          noStaff:
+            'Nessun membro del personale ancora. Clicca "Aggiungi Personale" per iniziare.',
+          noShifts:
+            'Nessun turno programmato ancora. Clicca "Aggiungi Turno" per iniziare.',
+          deleteConfirmResident: "Sei sicuro di voler eliminare questo ospite?",
+          deleteConfirmStaff:
+            "Sei sicuro di voler eliminare questo membro del personale?",
+          deleteConfirmShift: "Sei sicuro di voler eliminare questo turno?",
+          enterName: "Inserisci un nome",
+          needStaffFirst:
+            "⚠️ Devi prima aggiungere membri del personale prima di creare turni.",
+          fullName: "Nome completo",
+          unknown: "Sconosciuto",
+          installPrompt: "💡 Aggiungi questa app alla schermata Home!",
+          installInstructions: 'Safari: Condividi → "Aggiungi a Home"',
+          gotIt: "Ho capito",
+          sendCalendarInvite: "Invito",
+          calendarInviteSent: "Invito creato!",
+          shiftAt: "Turno presso",
+          loginTitle: "Accedi a La Casa di Sara",
+          password: "Password",
+          login: "Accedi",
+          wrongPassword: "Password errata!",
+          logout: "Esci",
+          helpButton: "Per aiuto contatta Edu",
+          changePassword: "Cambia Password",
+          currentPassword: "Password Attuale",
+          newPassword: "Nuova Password",
+          confirmPassword: "Conferma Password",
+          passwordsNoMatch: "Le password non corrispondono",
+          passwordChanged: "Password cambiata con successo!",
+          passwordTooShort: "La password deve essere almeno 4 caratteri",
+        },
+        en: {
+          appTitle: "Sara's Home",
+          appSubtitle: "Caring for those who need it most 💜",
+          dashboard: "Dashboard",
+          residents: "Residents",
+          staff: "Staff",
+          shifts: "Shifts",
+          residentsCount: "Residents",
+          staffCount: "Staff Members",
+          todayShifts: "Today's Shifts",
+          todaySchedule: "Today's Schedule",
+          noShiftsToday: "No shifts scheduled for today",
+          staffLabel: "Staff",
+          noStaffAssigned: "No staff assigned",
+          addResident: "Add Resident",
+          addStaff: "Add Staff",
+          addShift: "Add Shift",
+          editResident: "Edit",
+          newResident: "New",
+          resident: "Resident",
+          editStaff: "Edit",
+          newStaff: "New",
+          staffMember: "Staff Member",
+          editShift: "Edit",
+          newShift: "New",
+          shift: "Shift",
+          name: "Name",
+          required: "*",
+          room: "Room",
+          roomNumber: "Room number",
+          condition: "Condition",
+          conditionPlaceholder: "e.g., Alzheimer's, Dementia",
+          specialNeeds: "Special Needs",
+          specialNeedsPlaceholder: "Dietary, mobility, etc.",
+          role: "Role",
+          rolePlaceholder: "e.g., Caregiver, Nurse",
+          phone: "Phone",
+          contactNumber: "Contact number",
+          date: "Date",
+          startTime: "Start Time",
+          endTime: "End Time",
+          assignStaff: "Assign Staff",
+          notes: "Notes",
+          notesPlaceholder: "Any special notes...",
+          save: "Save",
+          cancel: "Cancel",
+          loading: "Loading...",
+          noResidents: 'No residents yet. Click "Add Resident".',
+          noStaff: 'No staff yet. Click "Add Staff".',
+          noShifts: 'No shifts yet. Click "Add Shift".',
+          deleteConfirmResident: "Delete this resident?",
+          deleteConfirmStaff: "Delete this staff member?",
+          deleteConfirmShift: "Delete this shift?",
+          enterName: "Please enter a name",
+          needStaffFirst: "⚠️ Add staff members first.",
+          fullName: "Full name",
+          unknown: "Unknown",
+          installPrompt: "💡 Add to Home Screen!",
+          installInstructions: 'Safari: Share → "Add to Home Screen"',
+          gotIt: "Got it",
+          sendCalendarInvite: "Invite",
+          calendarInviteSent: "Invite created!",
+          shiftAt: "Shift at",
+          loginTitle: "Login to Sara's Home",
+          password: "Password",
+          login: "Login",
+          wrongPassword: "Wrong password!",
+          logout: "Logout",
+          helpButton: "Contact Edu for help",
+          changePassword: "Change Password",
+          currentPassword: "Current Password",
+          newPassword: "New Password",
+          confirmPassword: "Confirm Password",
+          passwordsNoMatch: "Passwords don't match",
+          passwordChanged: "Password changed successfully!",
+          passwordTooShort: "Password must be at least 4 characters",
+        },
+      };
+
+      function LoginScreen({ onLogin, lang }) {
+        const [pwd, setPwd] = useState("");
+        const [error, setError] = useState("");
+        const t = translations[lang];
+
+        const handleSubmit = (e) => {
+          e.preventDefault();
+          const stored =
+            localStorage.getItem("casa-sara-pwd") || "orsettotigre";
+          if (pwd === stored) {
+            onLogin();
+          } else {
+            setError(t.wrongPassword);
+            setPwd("");
+          }
+        };
+
+        return h(
+          "div",
+          {
+            className:
+              "min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4",
+          },
+          h(
+            "div",
+            { className: "bg-white rounded-2xl shadow-xl p-8 w-full max-w-md" },
+            h(
+              "div",
+              { className: "text-center mb-8" },
+              h("div", { className: "text-6xl mb-4" }, "🏠"),
+              h(
+                "h1",
+                { className: "text-3xl font-bold text-gray-800 mb-2" },
+                t.appTitle
+              ),
+              h("p", { className: "text-gray-600" }, t.appSubtitle)
+            ),
+            h(
+              "form",
+              { onSubmit: handleSubmit, className: "space-y-4" },
+              h(
+                "div",
+                {},
+                h(
+                  "label",
+                  { className: "block text-sm font-medium text-gray-700 mb-2" },
+                  t.password
+                ),
+                h("input", {
+                  type: "password",
+                  value: pwd,
+                  onChange: (e) => {
+                    setPwd(e.target.value);
+                    setError("");
+                  },
+                  className:
+                    "w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:border-transparent",
+                  placeholder: "••••••••",
+                  autoFocus: true,
+                })
+              ),
+              error && h("p", { className: "text-red-600 text-sm" }, error),
+              h(
+                "button",
+                {
+                  type: "submit",
+                  className:
+                    "w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors flex items-center justify-center gap-2",
                 },
-                en: {
-                    appTitle: "Sara's Home",
-                    appSubtitle: 'Caring for those who need it most 💜',
-                    dashboard: 'Dashboard',
-                    residents: 'Residents',
-                    staff: 'Staff',
-                    shifts: 'Shifts',
-                    residentsCount: 'Residents',
-                    staffCount: 'Staff Members',
-                    todayShifts: "Today's Shifts",
-                    todaySchedule: "Today's Schedule",
-                    noShiftsToday: 'No shifts scheduled for today',
-                    staffLabel: 'Staff',
-                    noStaffAssigned: 'No staff assigned',
-                    addResident: 'Add Resident',
-                    addStaff: 'Add Staff',
-                    addShift: 'Add Shift',
-                    editResident: 'Edit',
-                    newResident: 'New',
-                    resident: 'Resident',
-                    editStaff: 'Edit',
-                    newStaff: 'New',
-                    staffMember: 'Staff Member',
-                    editShift: 'Edit',
-                    newShift: 'New',
-                    shift: 'Shift',
-                    name: 'Name',
-                    required: '*',
-                    room: 'Room',
-                    roomNumber: 'Room number',
-                    condition: 'Condition',
-                    conditionPlaceholder: 'e.g., Alzheimer\'s, Dementia',
-                    specialNeeds: 'Special Needs',
-                    specialNeedsPlaceholder: 'Dietary, mobility, etc.',
-                    role: 'Role',
-                    rolePlaceholder: 'e.g., Caregiver, Nurse',
-                    phone: 'Phone',
-                    contactNumber: 'Contact number',
-                    date: 'Date',
-                    startTime: 'Start Time',
-                    endTime: 'End Time',
-                    assignStaff: 'Assign Staff',
-                    notes: 'Notes',
-                    notesPlaceholder: 'Any special notes...',
-                    save: 'Save',
-                    cancel: 'Cancel',
-                    loading: 'Loading...',
-                    noResidents: 'No residents yet. Click "Add Resident".',
-                    noStaff: 'No staff yet. Click "Add Staff".',
-                    noShifts: 'No shifts yet. Click "Add Shift".',
-                    deleteConfirmResident: 'Delete this resident?',
-                    deleteConfirmStaff: 'Delete this staff member?',
-                    deleteConfirmShift: 'Delete this shift?',
-                    enterName: 'Please enter a name',
-                    needStaffFirst: '⚠️ Add staff members first.',
-                    fullName: 'Full name',
-                    unknown: 'Unknown',
-                    installPrompt: '💡 Add to Home Screen!',
-                    installInstructions: 'Safari: Share → "Add to Home Screen"',
-                    gotIt: 'Got it',
-                    sendCalendarInvite: 'Invite',
-                    calendarInviteSent: 'Invite created!',
-                    shiftAt: 'Shift at',
-                    loginTitle: 'Login to Sara\'s Home',
-                    password: 'Password',
-                    login: 'Login',
-                    wrongPassword: 'Wrong password!',
-                    logout: 'Logout',
-                    helpButton: 'Contact Edu for help',
-                    changePassword: 'Change Password',
-                    currentPassword: 'Current Password',
-                    newPassword: 'New Password',
-                    confirmPassword: 'Confirm Password',
-                    passwordsNoMatch: 'Passwords don\'t match',
-                    passwordChanged: 'Password changed successfully!',
-                    passwordTooShort: 'Password must be at least 4 characters'
-                }
-            };
+                h(Icon, { name: "Lock", size: 20 }),
+                t.login
+              )
+            )
+          )
+        );
+      }
 
-            function LoginScreen({ onLogin, lang }) {
-                const [pwd, setPwd] = useState('');
-                const [error, setError] = useState('');
-                const t = translations[lang];
+      function ChangePasswordModal({ onClose, lang }) {
+        const [current, setCurrent] = useState("");
+        const [newPwd, setNewPwd] = useState("");
+        const [confirm, setConfirm] = useState("");
+        const [error, setError] = useState("");
+        const t = translations[lang];
 
-                const handleSubmit = (e) => {
-                    e.preventDefault();
-                    const stored = localStorage.getItem('casa-sara-pwd') || 'orsettotigre';
-                    if (pwd === stored) {
-                        onLogin();
-                    } else {
-                        setError(t.wrongPassword);
-                        setPwd('');
-                    }
-                };
+        const handleSubmit = (e) => {
+          e.preventDefault();
+          const stored =
+            localStorage.getItem("casa-sara-pwd") || "orsettotigre";
 
-                return h('div', { className: 'min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4' },
-                    h('div', { className: 'bg-white rounded-2xl shadow-xl p-8 w-full max-w-md' },
-                        h('div', { className: 'text-center mb-8' },
-                            h('div', { className: 'text-6xl mb-4' }, '🏠'),
-                            h('h1', { className: 'text-3xl font-bold text-gray-800 mb-2' }, t.appTitle),
-                            h('p', { className: 'text-gray-600' }, t.appSubtitle)),
-                        h('form', { onSubmit: handleSubmit, className: 'space-y-4' },
-                            h('div', {},
-                                h('label', { className: 'block text-sm font-medium text-gray-700 mb-2' }, t.password),
-                                h('input', {
-                                    type: 'password',
-                                    value: pwd,
-                                    onChange: e => { setPwd(e.target.value); setError(''); },
-                                    className: 'w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:border-transparent',
-                                    placeholder: '••••••••',
-                                    autoFocus: true
-                                })),
-                            error && h('p', { className: 'text-red-600 text-sm' }, error),
-                            h('button', {
-                                type: 'submit',
-                                className: 'w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors flex items-center justify-center gap-2'
-                            }, h(Icon, { name: 'Lock', size: 20 }), t.login)),
-                        ));
-            }
+          if (current !== stored) {
+            setError(t.wrongPassword);
+            return;
+          }
+          if (newPwd.length < 4) {
+            setError(t.passwordTooShort);
+            return;
+          }
+          if (newPwd !== confirm) {
+            setError(t.passwordsNoMatch);
+            return;
+          }
 
-            function ChangePasswordModal({ onClose, lang }) {
-                const [current, setCurrent] = useState('');
-                const [newPwd, setNewPwd] = useState('');
-                const [confirm, setConfirm] = useState('');
-                const [error, setError] = useState('');
-                const t = translations[lang];
+          localStorage.setItem("casa-sara-pwd", newPwd);
+          alert(t.passwordChanged);
+          onClose();
+        };
 
-                const handleSubmit = (e) => {
-                    e.preventDefault();
-                    const stored = localStorage.getItem('casa-sara-pwd') || 'orsettotigre';
-                    
-                    if (current !== stored) {
-                        setError(t.wrongPassword);
-                        return;
-                    }
-                    if (newPwd.length < 4) {
-                        setError(t.passwordTooShort);
-                        return;
-                    }
-                    if (newPwd !== confirm) {
-                        setError(t.passwordsNoMatch);
-                        return;
-                    }
-                    
-                    localStorage.setItem('casa-sara-pwd', newPwd);
-                    alert(t.passwordChanged);
-                    onClose();
-                };
+        return h(
+          "div",
+          {
+            className:
+              "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50",
+          },
+          h(
+            "div",
+            { className: "bg-white rounded-xl shadow-2xl p-6 w-full max-w-md" },
+            h(
+              "h3",
+              { className: "text-xl font-bold text-gray-800 mb-4" },
+              t.changePassword
+            ),
+            h(
+              "form",
+              { onSubmit: handleSubmit, className: "space-y-4" },
+              h(
+                "div",
+                {},
+                h(
+                  "label",
+                  { className: "block text-sm font-medium text-gray-700 mb-1" },
+                  t.currentPassword
+                ),
+                h("input", {
+                  type: "password",
+                  value: current,
+                  onChange: (e) => {
+                    setCurrent(e.target.value);
+                    setError("");
+                  },
+                  className: "w-full border rounded-lg px-3 py-2",
+                  required: true,
+                })
+              ),
+              h(
+                "div",
+                {},
+                h(
+                  "label",
+                  { className: "block text-sm font-medium text-gray-700 mb-1" },
+                  t.newPassword
+                ),
+                h("input", {
+                  type: "password",
+                  value: newPwd,
+                  onChange: (e) => {
+                    setNewPwd(e.target.value);
+                    setError("");
+                  },
+                  className: "w-full border rounded-lg px-3 py-2",
+                  required: true,
+                })
+              ),
+              h(
+                "div",
+                {},
+                h(
+                  "label",
+                  { className: "block text-sm font-medium text-gray-700 mb-1" },
+                  t.confirmPassword
+                ),
+                h("input", {
+                  type: "password",
+                  value: confirm,
+                  onChange: (e) => {
+                    setConfirm(e.target.value);
+                    setError("");
+                  },
+                  className: "w-full border rounded-lg px-3 py-2",
+                  required: true,
+                })
+              ),
+              error && h("p", { className: "text-red-600 text-sm" }, error),
+              h(
+                "div",
+                { className: "flex gap-2" },
+                h(
+                  "button",
+                  {
+                    type: "submit",
+                    className:
+                      "flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700",
+                  },
+                  t.save
+                ),
+                h(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: onClose,
+                    className:
+                      "flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400",
+                  },
+                  t.cancel
+                )
+              )
+            )
+          )
+        );
+      }
 
-                return h('div', { className: 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50' },
-                    h('div', { className: 'bg-white rounded-xl shadow-2xl p-6 w-full max-w-md' },
-                        h('h3', { className: 'text-xl font-bold text-gray-800 mb-4' }, t.changePassword),
-                        h('form', { onSubmit: handleSubmit, className: 'space-y-4' },
-                            h('div', {},
-                                h('label', { className: 'block text-sm font-medium text-gray-700 mb-1' }, t.currentPassword),
-                                h('input', {
-                                    type: 'password',
-                                    value: current,
-                                    onChange: e => { setCurrent(e.target.value); setError(''); },
-                                    className: 'w-full border rounded-lg px-3 py-2',
-                                    required: true
-                                })),
-                            h('div', {},
-                                h('label', { className: 'block text-sm font-medium text-gray-700 mb-1' }, t.newPassword),
-                                h('input', {
-                                    type: 'password',
-                                    value: newPwd,
-                                    onChange: e => { setNewPwd(e.target.value); setError(''); },
-                                    className: 'w-full border rounded-lg px-3 py-2',
-                                    required: true
-                                })),
-                            h('div', {},
-                                h('label', { className: 'block text-sm font-medium text-gray-700 mb-1' }, t.confirmPassword),
-                                h('input', {
-                                    type: 'password',
-                                    value: confirm,
-                                    onChange: e => { setConfirm(e.target.value); setError(''); },
-                                    className: 'w-full border rounded-lg px-3 py-2',
-                                    required: true
-                                })),
-                            error && h('p', { className: 'text-red-600 text-sm' }, error),
-                            h('div', { className: 'flex gap-2' },
-                                h('button', {
-                                    type: 'submit',
-                                    className: 'flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700'
-                                }, t.save),
-                                h('button', {
-                                    type: 'button',
-                                    onClick: onClose,
-                                    className: 'flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400'
-                                }, t.cancel)))));
-            }
+      function App() {
+        const [authenticated, setAuthenticated] = React.useState(false);
+        const [view, setView] = React.useState("dashboard");
+        const [residents, setResidents] = React.useState([]);
+        const [staff, setStaff] = React.useState([]);
+        const [shifts, setShifts] = useState([]);
+        const [loading, setLoading] = useState(true);
+        const [editRes, setEditRes] = useState(null);
+        const [editStf, setEditStf] = useState(null);
+        const [editShf, setEditShf] = useState(null);
+        const [lang, setLang] = useState("it");
+        const [banner, setBanner] = useState(true);
+        const [showPwdModal, setShowPwdModal] = useState(false);
+        const [isPlaying, setIsPlaying] = useState(false);
+        const [player, setPlayer] = useState(null);
+        const [deferredPrompt, setDeferredPrompt] = useState(null);
+        const [showInstallButton, setShowInstallButton] = useState(false);
+        const t = translations[lang];
 
-            function App() {
-                const [authenticated, setAuthenticated] = React.useState(false);
-                const [view, setView] = React.useState('dashboard');
-                const [residents, setResidents] = React.useState([]);
-                const [staff, setStaff] = React.useState([]);
-                const [shifts, setShifts] = useState([]);
-                const [loading, setLoading] = useState(true);
-                const [editRes, setEditRes] = useState(null);
-                const [editStf, setEditStf] = useState(null);
-                const [editShf, setEditShf] = useState(null);
-                const [lang, setLang] = useState('it');
-                const [banner, setBanner] = useState(true);
-                const [showPwdModal, setShowPwdModal] = useState(false);
-                const [isPlaying, setIsPlaying] = useState(false);
-                const [player, setPlayer] = useState(null);
-                const [deferredPrompt, setDeferredPrompt] = useState(null);
-                const [showInstallButton, setShowInstallButton] = useState(false);
-                const t = translations[lang];
+        useEffect(() => {
+          const data = localStorage.getItem("casa-sara");
+          if (data) {
+            const d = JSON.parse(data);
+            setResidents(d.residents || []);
+            setStaff(d.staff || []);
+            setShifts(d.shifts || []);
+            setLang(d.lang || "it");
+            setBanner(d.banner !== false);
+          }
+          setLoading(false);
+        }, []);
 
-                useEffect(() => {
-                    const data = localStorage.getItem('casa-sara');
-                    if (data) {
-                        const d = JSON.parse(data);
-                        setResidents(d.residents || []);
-                        setStaff(d.staff || []);
-                        setShifts(d.shifts || []);
-                        setLang(d.lang || 'it');
-                        setBanner(d.banner !== false);
-                    }
-                    setLoading(false);
-                }, []);
+        useEffect(() => {
+          if (!loading && authenticated) {
+            localStorage.setItem(
+              "casa-sara",
+              JSON.stringify({
+                residents,
+                staff,
+                shifts,
+                lang,
+                banner,
+              })
+            );
+          }
+        }, [residents, staff, shifts, lang, banner, loading, authenticated]);
 
-                useEffect(() => {
-                    if (!loading && authenticated) {
-                        localStorage.setItem('casa-sara', JSON.stringify({
-                            residents, staff, shifts, lang, banner
-                        }));
-                    }
-                }, [residents, staff, shifts, lang, banner, loading, authenticated]);
+        useEffect(() => {
+          if (!authenticated) return;
 
-                useEffect(() => {
-                    if (!authenticated) return;
-                    
-                    window.onYouTubeIframeAPIReady = () => {
-                        const ytPlayer = new YT.Player('youtube-player', {
-                            height: '0',
-                            width: '0',
-                            videoId: 'jfKfPfyJRdk', // Replace with your YouTube video ID
-                            playerVars: {
-                                autoplay: 0,
-                                controls: 0,
-                                disablekb: 1,
-                                fs: 0,
-                                modestbranding: 1
+          window.onYouTubeIframeAPIReady = () => {
+            const ytPlayer = new YT.Player("youtube-player", {
+              height: "0",
+              width: "0",
+              videoId: "jfKfPfyJRdk", // Replace with your YouTube video ID
+              playerVars: {
+                autoplay: 0,
+                controls: 0,
+                disablekb: 1,
+                fs: 0,
+                modestbranding: 1,
+              },
+              events: {
+                onReady: (event) => setPlayer(event.target),
+                onStateChange: (event) => {
+                  if (event.data === YT.PlayerState.ENDED) {
+                    setIsPlaying(false);
+                  }
+                },
+              },
+            });
+          };
+
+          if (window.YT && window.YT.Player) {
+            window.onYouTubeIframeAPIReady();
+          }
+        }, [authenticated]);
+
+        useEffect(() => {
+          if (!authenticated) return;
+
+          const handleBeforeInstallPrompt = (e) => {
+            e.preventDefault();
+            setDeferredPrompt(e);
+            setShowInstallButton(true);
+          };
+
+          window.addEventListener(
+            "beforeinstallprompt",
+            handleBeforeInstallPrompt
+          );
+
+          return () => {
+            window.removeEventListener(
+              "beforeinstallprompt",
+              handleBeforeInstallPrompt
+            );
+          };
+        }, [authenticated]);
+
+        const toggleMusic = () => {
+          if (!player) return;
+          if (isPlaying) {
+            player.pauseVideo();
+            setIsPlaying(false);
+          } else {
+            player.playVideo();
+            setIsPlaying(true);
+          }
+        };
+
+        const handleInstallClick = async () => {
+          if (!deferredPrompt) return;
+
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+
+          if (outcome === "accepted") {
+            setShowInstallButton(false);
+          }
+
+          setDeferredPrompt(null);
+        };
+
+        const getTodayShifts = () => {
+          const today = new Date().toISOString().split("T")[0];
+          return shifts
+            .filter((s) => s.date === today)
+            .sort((a, b) => a.startTime.localeCompare(b.startTime));
+        };
+
+        const getStaffName = (id) =>
+          staff.find((s) => s.id === id)?.name || t.unknown;
+
+        const createICS = (shift) => {
+          try {
+            const names = shift.staffIds.map(getStaffName).join(", ");
+            const start = new Date(`${shift.date}T${shift.startTime}:00`);
+            const end = new Date(`${shift.date}T${shift.endTime}:00`);
+            const fmt = (d) =>
+              d.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+            const ics = [
+              "BEGIN:VCALENDAR",
+              "VERSION:2.0",
+              "PRODID:-//La Casa di Sara//IT",
+              "BEGIN:VEVENT",
+              `DTSTART:${fmt(start)}`,
+              `DTEND:${fmt(end)}`,
+              `UID:${shift.id}@sara`,
+              `SUMMARY:${t.shiftAt} La Casa di Sara`,
+              `DESCRIPTION:${t.staffLabel}: ${names || t.noStaffAssigned}`,
+              "LOCATION:La Casa di Sara",
+              "END:VEVENT",
+              "END:VCALENDAR",
+            ].join("\r\n");
+            const blob = new Blob([ics], { type: "text/calendar" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "turno.ics";
+            a.click();
+            URL.revokeObjectURL(url);
+            alert(t.calendarInviteSent);
+          } catch (e) {
+            alert("Errore");
+          }
+        };
+
+        const handleLogout = () => {
+          setAuthenticated(false);
+          setView("dashboard");
+        };
+
+        if (!authenticated) {
+          return h(LoginScreen, {
+            onLogin: () => setAuthenticated(true),
+            lang,
+          });
+        }
+
+        if (loading)
+          return h(
+            "div",
+            {
+              className:
+                "min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center",
+            },
+            h("div", { className: "text-xl text-gray-600" }, t.loading)
+          );
+
+        return h(
+          "div",
+          {
+            className:
+              "min-h-screen bg-gradient-to-br from-blue-50 to-purple-50",
+          },
+          h(
+            "div",
+            { className: "bg-white shadow-sm border-b border-gray-200" },
+            h(
+              "div",
+              { className: "max-w-7xl mx-auto px-4 py-4" },
+              h(
+                "div",
+                { className: "flex justify-between items-center" },
+                h(
+                  "div",
+                  {},
+                  h(
+                    "h1",
+                    {
+                      className:
+                        "text-2xl font-bold text-gray-800 flex items-center gap-2",
+                    },
+                    h(Icon, { name: "Home", className: "text-purple-600" }),
+                    t.appTitle
+                  ),
+                  h(
+                    "p",
+                    { className: "text-sm text-gray-500 mt-1" },
+                    t.appSubtitle
+                  )
+                ),
+                h(
+                  "div",
+                  { className: "flex items-center gap-2" },
+                  h(
+                    "button",
+                    {
+                      onClick: () => setShowPwdModal(true),
+                      className:
+                        "flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm",
+                      title: t.changePassword,
+                    },
+                    h(Icon, { name: "Lock", size: 16 })
+                  ),
+                  h(
+                    "button",
+                    {
+                      onClick: () => setLang(lang === "it" ? "en" : "it"),
+                      className:
+                        "flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg",
+                    },
+                    h(Icon, { name: "Languages", size: 18 }),
+                    h(
+                      "span",
+                      { className: "font-medium" },
+                      lang === "it" ? "IT" : "EN"
+                    )
+                  ),
+                  h(
+                    "button",
+                    {
+                      onClick: handleLogout,
+                      className:
+                        "flex items-center gap-2 px-4 py-2 bg-red-100 text-red-700 hover:bg-red-200 rounded-lg",
+                    },
+                    h(Icon, { name: "LogOut", size: 18 }),
+                    h("span", { className: "hidden sm:inline" }, t.logout)
+                  )
+                )
+              )
+            )
+          ),
+          banner &&
+            h(
+              "div",
+              {
+                className:
+                  "bg-gradient-to-r from-purple-600 to-blue-600 text-white",
+              },
+              h(
+                "div",
+                { className: "max-w-7xl mx-auto px-4 py-3" },
+                h(
+                  "div",
+                  { className: "flex items-start justify-between gap-4" },
+                  h(
+                    "div",
+                    {
+                      className: "flex-1",
+                      style: {
+                        borderRadius: "8px",
+                        padding: "8px",
+                        border: "solid 2px #9333ea",
+                      },
+                    },
+                    h(
+                      "p",
+                      { className: "font-semibold mb-1" },
+                      t.installPrompt
+                    ),
+                    h(
+                      "p",
+                      { className: "text-sm text-purple-600" },
+                      t.installInstructions
+                    )
+                  ),
+                  h(
+                    "button",
+                    {
+                      onClick: () => setBanner(false),
+                      className:
+                        "bg-white/20 hover:bg-white/30 px-3 py-1 rounded-lg text-sm",
+                    },
+                    t.gotIt
+                  )
+                )
+              )
+            ),
+          h(
+            "div",
+            { className: "bg-white border-b" },
+            h(
+              "div",
+              { className: "max-w-7xl mx-auto px-4" },
+              h(
+                "div",
+                { className: "flex gap-1" },
+                [
+                  { id: "dashboard", label: t.dashboard, icon: "Home" },
+                  { id: "residents", label: t.residents, icon: "Users" },
+                  { id: "staff", label: t.staff, icon: "UserPlus" },
+                  { id: "shifts", label: t.shifts, icon: "Calendar" },
+                ].map((tab) =>
+                  h(
+                    "button",
+                    {
+                      key: tab.id,
+                      onClick: () => setView(tab.id),
+                      className: `flex items-center gap-2 px-4 py-3 font-medium ${
+                        view === tab.id
+                          ? "text-purple-600 border-b-2 border-purple-600"
+                          : "text-gray-600 hover:text-gray-800"
+                      }`,
+                    },
+                    h(Icon, { name: tab.icon, size: 18 }),
+                    tab.label
+                  )
+                )
+              )
+            )
+          ),
+          h(
+            "div",
+            { className: "max-w-7xl mx-auto px-4 py-6 pb-24" },
+            view === "dashboard" &&
+              h(
+                "div",
+                { className: "space-y-6" },
+                h(
+                  "div",
+                  { className: "grid grid-cols-1 md:grid-cols-3 gap-4" },
+                  h(
+                    "div",
+                    { className: "bg-white rounded-lg shadow p-6" },
+                    h(
+                      "div",
+                      { className: "flex items-center gap-3" },
+                      h(
+                        "div",
+                        { className: "bg-blue-100 p-3 rounded-lg" },
+                        h(Icon, {
+                          name: "Users",
+                          className: "text-blue-600",
+                          size: 24,
+                        })
+                      ),
+                      h(
+                        "div",
+                        {},
+                        h(
+                          "div",
+                          { className: "text-2xl font-bold text-gray-800" },
+                          residents.length
+                        ),
+                        h(
+                          "div",
+                          { className: "text-sm text-gray-500" },
+                          t.residentsCount
+                        )
+                      )
+                    )
+                  ),
+                  h(
+                    "div",
+                    { className: "bg-white rounded-lg shadow p-6" },
+                    h(
+                      "div",
+                      { className: "flex items-center gap-3" },
+                      h(
+                        "div",
+                        { className: "bg-green-100 p-3 rounded-lg" },
+                        h(Icon, {
+                          name: "UserPlus",
+                          className: "text-green-600",
+                          size: 24,
+                        })
+                      ),
+                      h(
+                        "div",
+                        {},
+                        h(
+                          "div",
+                          { className: "text-2xl font-bold text-gray-800" },
+                          staff.length
+                        ),
+                        h(
+                          "div",
+                          { className: "text-sm text-gray-500" },
+                          t.staffCount
+                        )
+                      )
+                    )
+                  ),
+                  h(
+                    "div",
+                    { className: "bg-white rounded-lg shadow p-6" },
+                    h(
+                      "div",
+                      { className: "flex items-center gap-3" },
+                      h(
+                        "div",
+                        { className: "bg-purple-100 p-3 rounded-lg" },
+                        h(Icon, {
+                          name: "Clock",
+                          className: "text-purple-600",
+                          size: 24,
+                        })
+                      ),
+                      h(
+                        "div",
+                        {},
+                        h(
+                          "div",
+                          { className: "text-2xl font-bold text-gray-800" },
+                          getTodayShifts().length
+                        ),
+                        h(
+                          "div",
+                          { className: "text-sm text-gray-500" },
+                          t.todayShifts
+                        )
+                      )
+                    )
+                  )
+                ),
+                h(
+                  "div",
+                  { className: "bg-white rounded-lg shadow p-6" },
+                  h(
+                    "h2",
+                    { className: "text-xl font-bold text-gray-800 mb-4" },
+                    t.todaySchedule
+                  ),
+                  getTodayShifts().length === 0
+                    ? h("p", { className: "text-gray-500" }, t.noShiftsToday)
+                    : h(
+                        "div",
+                        { className: "space-y-3" },
+                        getTodayShifts().map((s) =>
+                          h(
+                            "div",
+                            { key: s.id, className: "border rounded-lg p-4" },
+                            h(
+                              "div",
+                              {
+                                className:
+                                  "flex justify-between items-start gap-3",
+                              },
+                              h(
+                                "div",
+                                { className: "flex-1" },
+                                h(
+                                  "div",
+                                  { className: "font-semibold text-gray-800" },
+                                  `${s.startTime} - ${s.endTime}`
+                                ),
+                                h(
+                                  "div",
+                                  { className: "text-sm text-gray-600 mt-1" },
+                                  `${t.staffLabel}: ${
+                                    s.staffIds.length > 0
+                                      ? s.staffIds.map(getStaffName).join(", ")
+                                      : t.noStaffAssigned
+                                  }`
+                                ),
+                                s.notes &&
+                                  h(
+                                    "div",
+                                    { className: "text-sm text-gray-500 mt-1" },
+                                    s.notes
+                                  )
+                              ),
+                              h(
+                                "button",
+                                {
+                                  onClick: () => createICS(s),
+                                  className:
+                                    "bg-purple-100 text-purple-700 px-3 py-2 rounded-lg hover:bg-purple-200 text-sm flex items-center gap-2",
+                                },
+                                h(Icon, { name: "CalendarPlus", size: 16 }),
+                                h(
+                                  "span",
+                                  { className: "hidden sm:inline" },
+                                  t.sendCalendarInvite
+                                )
+                              )
+                            )
+                          )
+                        )
+                      )
+                )
+              ),
+            view === "residents" &&
+              h(
+                "div",
+                { className: "space-y-4" },
+                h(
+                  "div",
+                  { className: "flex justify-between items-center" },
+                  h(
+                    "h2",
+                    { className: "text-2xl font-bold text-gray-800" },
+                    t.residents
+                  ),
+                  h(
+                    "button",
+                    {
+                      onClick: () =>
+                        setEditRes({
+                          id: Date.now().toString(),
+                          name: "",
+                          condition: "",
+                          room: "",
+                          specialNeeds: "",
+                        }),
+                      className:
+                        "bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-purple-700",
+                    },
+                    h(Icon, { name: "Plus", size: 20 }),
+                    t.addResident
+                  )
+                ),
+                editRes &&
+                  h(
+                    "div",
+                    { className: "bg-white rounded-lg shadow p-6" },
+                    h(
+                      "h3",
+                      { className: "text-lg font-semibold mb-4" },
+                      `${
+                        residents.find((r) => r.id === editRes.id)
+                          ? t.editResident
+                          : t.newResident
+                      } ${t.resident}`
+                    ),
+                    h(
+                      "div",
+                      { className: "grid grid-cols-1 md:grid-cols-2 gap-4" },
+                      h(
+                        "div",
+                        {},
+                        h(
+                          "label",
+                          {
+                            className:
+                              "block text-sm font-medium text-gray-700 mb-1",
+                          },
+                          `${t.name} ${t.required}`
+                        ),
+                        h("input", {
+                          type: "text",
+                          value: editRes.name,
+                          onChange: (e) =>
+                            setEditRes({ ...editRes, name: e.target.value }),
+                          className: "w-full border rounded-lg px-3 py-2",
+                          placeholder: t.fullName,
+                        })
+                      ),
+                      h(
+                        "div",
+                        {},
+                        h(
+                          "label",
+                          {
+                            className:
+                              "block text-sm font-medium text-gray-700 mb-1",
+                          },
+                          t.room
+                        ),
+                        h("input", {
+                          type: "text",
+                          value: editRes.room,
+                          onChange: (e) =>
+                            setEditRes({ ...editRes, room: e.target.value }),
+                          className: "w-full border rounded-lg px-3 py-2",
+                          placeholder: t.roomNumber,
+                        })
+                      ),
+                      h(
+                        "div",
+                        {},
+                        h(
+                          "label",
+                          {
+                            className:
+                              "block text-sm font-medium text-gray-700 mb-1",
+                          },
+                          t.condition
+                        ),
+                        h("input", {
+                          type: "text",
+                          value: editRes.condition,
+                          onChange: (e) =>
+                            setEditRes({
+                              ...editRes,
+                              condition: e.target.value,
+                            }),
+                          className: "w-full border rounded-lg px-3 py-2",
+                          placeholder: t.conditionPlaceholder,
+                        })
+                      ),
+                      h(
+                        "div",
+                        {},
+                        h(
+                          "label",
+                          {
+                            className:
+                              "block text-sm font-medium text-gray-700 mb-1",
+                          },
+                          t.specialNeeds
+                        ),
+                        h("input", {
+                          type: "text",
+                          value: editRes.specialNeeds,
+                          onChange: (e) =>
+                            setEditRes({
+                              ...editRes,
+                              specialNeeds: e.target.value,
+                            }),
+                          className: "w-full border rounded-lg px-3 py-2",
+                          placeholder: t.specialNeedsPlaceholder,
+                        })
+                      )
+                    ),
+                    h(
+                      "div",
+                      { className: "flex gap-2 mt-4" },
+                      h(
+                        "button",
+                        {
+                          onClick: () => {
+                            if (!editRes.name.trim()) return alert(t.enterName);
+                            setResidents(
+                              residents.find((r) => r.id === editRes.id)
+                                ? residents.map((r) =>
+                                    r.id === editRes.id ? editRes : r
+                                  )
+                                : [...residents, editRes]
+                            );
+                            setEditRes(null);
+                          },
+                          className:
+                            "bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-700",
+                        },
+                        h(Icon, { name: "Save", size: 18 }),
+                        t.save
+                      ),
+                      h(
+                        "button",
+                        {
+                          onClick: () => setEditRes(null),
+                          className:
+                            "bg-gray-300 text-gray-700 px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-400",
+                        },
+                        h(Icon, { name: "X", size: 18 }),
+                        t.cancel
+                      )
+                    )
+                  ),
+                h(
+                  "div",
+                  { className: "grid grid-cols-1 md:grid-cols-2 gap-4" },
+                  residents.map((r) =>
+                    h(
+                      "div",
+                      {
+                        key: r.id,
+                        className: "bg-white rounded-lg shadow p-4",
+                      },
+                      h(
+                        "div",
+                        { className: "flex justify-between items-start" },
+                        h(
+                          "div",
+                          { className: "flex-1" },
+                          h(
+                            "h3",
+                            {
+                              className: "font-semibold text-gray-800 text-lg",
                             },
-                            events: {
-                                onReady: (event) => setPlayer(event.target),
-                                onStateChange: (event) => {
-                                    if (event.data === YT.PlayerState.ENDED) {
-                                        setIsPlaying(false);
-                                    }
-                                }
-                            }
-                        });
-                    };
-
-                    if (window.YT && window.YT.Player) {
-                        window.onYouTubeIframeAPIReady();
-                    }
-                }, [authenticated]);
-
-                useEffect(() => {
-                    if (!authenticated) return;
-                    
-                    const handleBeforeInstallPrompt = (e) => {
-                        e.preventDefault();
-                        setDeferredPrompt(e);
-                        setShowInstallButton(true);
-                    };
-
-                    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
-                    return () => {
-                        window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-                    };
-                }, [authenticated]);
-
-                const toggleMusic = () => {
-                    if (!player) return;
-                    if (isPlaying) {
-                        player.pauseVideo();
-                        setIsPlaying(false);
-                    } else {
-                        player.playVideo();
-                        setIsPlaying(true);
-                    }
-                };
-
-                const handleInstallClick = async () => {
-                    if (!deferredPrompt) return;
-                    
-                    deferredPrompt.prompt();
-                    const { outcome } = await deferredPrompt.userChoice;
-                    
-                    if (outcome === 'accepted') {
-                        setShowInstallButton(false);
-                    }
-                    
-                    setDeferredPrompt(null);
-                };
-
-                const getTodayShifts = () => {
-                    const today = new Date().toISOString().split('T')[0];
-                    return shifts.filter(s => s.date === today).sort((a,b) => a.startTime.localeCompare(b.startTime));
-                };
-
-                const getStaffName = (id) => staff.find(s => s.id === id)?.name || t.unknown;
-
-                const createICS = (shift) => {
-                    try {
-                        const names = shift.staffIds.map(getStaffName).join(', ');
-                        const start = new Date(`${shift.date}T${shift.startTime}:00`);
-                        const end = new Date(`${shift.date}T${shift.endTime}:00`);
-                        const fmt = d => d.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
-                        const ics = [
-                            'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//La Casa di Sara//IT',
-                            'BEGIN:VEVENT',`DTSTART:${fmt(start)}`,`DTEND:${fmt(end)}`,
-                            `UID:${shift.id}@sara`,`SUMMARY:${t.shiftAt} La Casa di Sara`,
-                            `DESCRIPTION:${t.staffLabel}: ${names||t.noStaffAssigned}`,
-                            'LOCATION:La Casa di Sara','END:VEVENT','END:VCALENDAR'
-                        ].join('\r\n');
-                        const blob = new Blob([ics], {type: 'text/calendar'});
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url; a.download = 'turno.ics';
-                        a.click(); URL.revokeObjectURL(url);
-                        alert(t.calendarInviteSent);
-                    } catch(e) { alert('Errore'); }
-                };
-
-                const handleLogout = () => {
-                    setAuthenticated(false);
-                    setView('dashboard');
-                };
-
-                if (!authenticated) {
-                    return h(LoginScreen, { onLogin: () => setAuthenticated(true), lang });
-                }
-
-                if (loading) return h('div',{className:'min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center'},
-                    h('div',{className:'text-xl text-gray-600'},t.loading));
-
-                return h('div',{className:'min-h-screen bg-gradient-to-br from-blue-50 to-purple-50'},
-                    h('div',{className:'bg-white shadow-sm border-b border-gray-200'},
-                        h('div',{className:'max-w-7xl mx-auto px-4 py-4'},
-                            h('div',{className:'flex justify-between items-center'},
-                                h('div',{},
-                                    h('h1',{className:'text-2xl font-bold text-gray-800 flex items-center gap-2'},
-                                        h(Icon,{name:'Home',className:'text-purple-600'}),t.appTitle),
-                                    h('p',{className:'text-sm text-gray-500 mt-1'},t.appSubtitle)),
-                                h('div', { className: 'flex items-center gap-2' },
-                                    h('button',{onClick:()=>setShowPwdModal(true),
-                                        className:'flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm',
-                                        title: t.changePassword},
-                                        h(Icon,{name:'Lock',size:16})),
-                                    h('button',{onClick:()=>setLang(lang==='it'?'en':'it'),
-                                        className:'flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg'},
-                                        h(Icon,{name:'Languages',size:18}),
-                                        h('span',{className:'font-medium'},lang==='it'?'IT':'EN')),
-                                    h('button',{onClick:handleLogout,
-                                        className:'flex items-center gap-2 px-4 py-2 bg-red-100 text-red-700 hover:bg-red-200 rounded-lg'},
-                                        h(Icon,{name:'LogOut',size:18}),
-                                        h('span',{className:'hidden sm:inline'},t.logout)))))),
-                    banner && h('div',{className:'bg-gradient-to-r from-purple-600 to-blue-600 text-white'},
-                        h('div',{className:'max-w-7xl mx-auto px-4 py-3'},
-                            h('div',{className:'flex items-start justify-between gap-4'},
-                                h('div',{className:'flex-1'},
-                                    h('p',{className:'font-semibold mb-1'},t.installPrompt),
-                                    h('p',{className:'text-sm text-purple-600'},t.installInstructions)),
-                                h('button',{onClick:()=>setBanner(false),
-                                    className:'bg-white/20 hover:bg-white/30 px-3 py-1 rounded-lg text-sm'},t.gotIt)))),
-                    h('div',{className:'bg-white border-b'},
-                        h('div',{className:'max-w-7xl mx-auto px-4'},
-                            h('div',{className:'flex gap-1'},
-                                [{id:'dashboard',label:t.dashboard,icon:'Home'},
-                                {id:'residents',label:t.residents,icon:'Users'},
-                                {id:'staff',label:t.staff,icon:'UserPlus'},
-                                {id:'shifts',label:t.shifts,icon:'Calendar'}].map(tab=>
-                                    h('button',{key:tab.id,onClick:()=>setView(tab.id),
-                                        className:`flex items-center gap-2 px-4 py-3 font-medium ${view===tab.id?'text-purple-600 border-b-2 border-purple-600':'text-gray-600 hover:text-gray-800'}`},
-                                        h(Icon,{name:tab.icon,size:18}),tab.label))))),
-                    h('div',{className:'max-w-7xl mx-auto px-4 py-6 pb-24'},
-                        view==='dashboard' && h('div',{className:'space-y-6'},
-                            h('div',{className:'grid grid-cols-1 md:grid-cols-3 gap-4'},
-                                h('div',{className:'bg-white rounded-lg shadow p-6'},
-                                    h('div',{className:'flex items-center gap-3'},
-                                        h('div',{className:'bg-blue-100 p-3 rounded-lg'},h(Icon,{name:'Users',className:'text-blue-600',size:24})),
-                                        h('div',{},h('div',{className:'text-2xl font-bold text-gray-800'},residents.length),
-                                            h('div',{className:'text-sm text-gray-500'},t.residentsCount)))),
-                                h('div',{className:'bg-white rounded-lg shadow p-6'},
-                                    h('div',{className:'flex items-center gap-3'},
-                                        h('div',{className:'bg-green-100 p-3 rounded-lg'},h(Icon,{name:'UserPlus',className:'text-green-600',size:24})),
-                                        h('div',{},h('div',{className:'text-2xl font-bold text-gray-800'},staff.length),
-                                            h('div',{className:'text-sm text-gray-500'},t.staffCount)))),
-                                h('div',{className:'bg-white rounded-lg shadow p-6'},
-                                    h('div',{className:'flex items-center gap-3'},
-                                        h('div',{className:'bg-purple-100 p-3 rounded-lg'},h(Icon,{name:'Clock',className:'text-purple-600',size:24})),
-                                        h('div',{},h('div',{className:'text-2xl font-bold text-gray-800'},getTodayShifts().length),
-                                            h('div',{className:'text-sm text-gray-500'},t.todayShifts))))),
-                            h('div',{className:'bg-white rounded-lg shadow p-6'},
-                                h('h2',{className:'text-xl font-bold text-gray-800 mb-4'},t.todaySchedule),
-                                getTodayShifts().length===0 ? h('p',{className:'text-gray-500'},t.noShiftsToday) :
-                                h('div',{className:'space-y-3'},getTodayShifts().map(s=>
-                                    h('div',{key:s.id,className:'border rounded-lg p-4'},
-                                        h('div',{className:'flex justify-between items-start gap-3'},
-                                            h('div',{className:'flex-1'},
-                                                h('div',{className:'font-semibold text-gray-800'},`${s.startTime} - ${s.endTime}`),
-                                                h('div',{className:'text-sm text-gray-600 mt-1'},
-                                                    `${t.staffLabel}: ${s.staffIds.length>0?s.staffIds.map(getStaffName).join(', '):t.noStaffAssigned}`),
-                                                s.notes&&h('div',{className:'text-sm text-gray-500 mt-1'},s.notes)),
-                                            h('button',{onClick:()=>createICS(s),
-                                                className:'bg-purple-100 text-purple-700 px-3 py-2 rounded-lg hover:bg-purple-200 text-sm flex items-center gap-2'},
-                                                h(Icon,{name:'CalendarPlus',size:16}),
-                                                h('span',{className:'hidden sm:inline'},t.sendCalendarInvite)))))))),
-                        view==='residents' && h('div',{className:'space-y-4'},
-                            h('div',{className:'flex justify-between items-center'},
-                                h('h2',{className:'text-2xl font-bold text-gray-800'},t.residents),
-                                h('button',{onClick:()=>setEditRes({id:Date.now().toString(),name:'',condition:'',room:'',specialNeeds:''}),
-                                    className:'bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-purple-700'},
-                                    h(Icon,{name:'Plus',size:20}),t.addResident)),
-                            editRes && h('div',{className:'bg-white rounded-lg shadow p-6'},
-                                h('h3',{className:'text-lg font-semibold mb-4'},
-                                    `${residents.find(r=>r.id===editRes.id)?t.editResident:t.newResident} ${t.resident}`),
-                                h('div',{className:'grid grid-cols-1 md:grid-cols-2 gap-4'},
-                                    h('div',{},h('label',{className:'block text-sm font-medium text-gray-700 mb-1'},`${t.name} ${t.required}`),
-                                        h('input',{type:'text',value:editRes.name,onChange:e=>setEditRes({...editRes,name:e.target.value}),
-                                            className:'w-full border rounded-lg px-3 py-2',placeholder:t.fullName})),
-                                    h('div',{},h('label',{className:'block text-sm font-medium text-gray-700 mb-1'},t.room),
-                                        h('input',{type:'text',value:editRes.room,onChange:e=>setEditRes({...editRes,room:e.target.value}),
-                                            className:'w-full border rounded-lg px-3 py-2',placeholder:t.roomNumber})),
-                                    h('div',{},h('label',{className:'block text-sm font-medium text-gray-700 mb-1'},t.condition),
-                                        h('input',{type:'text',value:editRes.condition,onChange:e=>setEditRes({...editRes,condition:e.target.value}),
-                                            className:'w-full border rounded-lg px-3 py-2',placeholder:t.conditionPlaceholder})),
-                                    h('div',{},h('label',{className:'block text-sm font-medium text-gray-700 mb-1'},t.specialNeeds),
-                                        h('input',{type:'text',value:editRes.specialNeeds,onChange:e=>setEditRes({...editRes,specialNeeds:e.target.value}),
-                                            className:'w-full border rounded-lg px-3 py-2',placeholder:t.specialNeedsPlaceholder}))),
-                                h('div',{className:'flex gap-2 mt-4'},
-                                    h('button',{onClick:()=>{
-                                        if(!editRes.name.trim())return alert(t.enterName);
-                                        setResidents(residents.find(r=>r.id===editRes.id)?residents.map(r=>r.id===editRes.id?editRes:r):[...residents,editRes]);
-                                        setEditRes(null);
-                                    },className:'bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-700'},
-                                        h(Icon,{name:'Save',size:18}),t.save),
-                                    h('button',{onClick:()=>setEditRes(null),
-                                        className:'bg-gray-300 text-gray-700 px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-400'},
-                                        h(Icon,{name:'X',size:18}),t.cancel))),
-                            h('div',{className:'grid grid-cols-1 md:grid-cols-2 gap-4'},
-                                residents.map(r=>h('div',{key:r.id,className:'bg-white rounded-lg shadow p-4'},
-                                    h('div',{className:'flex justify-between items-start'},
-                                        h('div',{className:'flex-1'},
-                                            h('h3',{className:'font-semibold text-gray-800 text-lg'},r.name),
-                                            r.room&&h('p',{className:'text-sm text-gray-600 mt-1'},`${t.room}: ${r.room}`),
-                                            r.condition&&h('p',{className:'text-sm text-gray-600'},`${t.condition}: ${r.condition}`),
-                                            r.specialNeeds&&h('p',{className:'text-sm text-gray-500 mt-2'},r.specialNeeds)),
-                                        h('div',{className:'flex gap-2'},
-                                            h('button',{onClick:()=>setEditRes(r),className:'text-blue-600 hover:text-blue-800 p-1'},
-                                                h(Icon,{name:'Edit2',size:18})),
-                                            h('button',{onClick:()=>confirm(t.deleteConfirmResident)&&setResidents(residents.filter(x=>x.id!==r.id)),
-                                                className:'text-red-600 hover:text-red-800 p-1'},h(Icon,{name:'Trash2',size:18}))))))),
-                            residents.length===0&&!editRes&&h('div',{className:'text-center py-12 text-gray-500'},
-                                h(Icon,{name:'Users',size:48,className:'mx-auto mb-4 opacity-50'}),
-                                h('p',{},t.noResidents))),
-                        view==='staff' && h('div',{className:'space-y-4'},
-                            h('div',{className:'flex justify-between items-center'},
-                                h('h2',{className:'text-2xl font-bold text-gray-800'},t.staff),
-                                h('button',{onClick:()=>setEditStf({id:Date.now().toString(),name:'',role:'',phone:''}),
-                                    className:'bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-purple-700'},
-                                    h(Icon,{name:'Plus',size:20}),t.addStaff)),
-                            editStf && h('div',{className:'bg-white rounded-lg shadow p-6'},
-                                h('h3',{className:'text-lg font-semibold mb-4'},
-                                    `${staff.find(s=>s.id===editStf.id)?t.editStaff:t.newStaff} ${t.staffMember}`),
-                                h('div',{className:'grid grid-cols-1 md:grid-cols-2 gap-4'},
-                                    h('div',{},h('label',{className:'block text-sm font-medium text-gray-700 mb-1'},`${t.name} ${t.required}`),
-                                        h('input',{type:'text',value:editStf.name,onChange:e=>setEditStf({...editStf,name:e.target.value}),
-                                            className:'w-full border rounded-lg px-3 py-2',placeholder:t.fullName})),
-                                    h('div',{},h('label',{className:'block text-sm font-medium text-gray-700 mb-1'},t.role),
-                                        h('input',{type:'text',value:editStf.role,onChange:e=>setEditStf({...editStf,role:e.target.value}),
-                                            className:'w-full border rounded-lg px-3 py-2',placeholder:t.rolePlaceholder})),
-                                    h('div',{className:'md:col-span-2'},h('label',{className:'block text-sm font-medium text-gray-700 mb-1'},t.phone),
-                                        h('input',{type:'tel',value:editStf.phone,onChange:e=>setEditStf({...editStf,phone:e.target.value}),
-                                            className:'w-full border rounded-lg px-3 py-2',placeholder:t.contactNumber}))),
-                                h('div',{className:'flex gap-2 mt-4'},
-                                    h('button',{onClick:()=>{
-                                        if(!editStf.name.trim())return alert(t.enterName);
-                                        setStaff(staff.find(s=>s.id===editStf.id)?staff.map(s=>s.id===editStf.id?editStf:s):[...staff,editStf]);
-                                        setEditStf(null);
-                                    },className:'bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-700'},
-                                        h(Icon,{name:'Save',size:18}),t.save),
-                                    h('button',{onClick:()=>setEditStf(null),
-                                        className:'bg-gray-300 text-gray-700 px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-400'},
-                                        h(Icon,{name:'X',size:18}),t.cancel))),
-                            h('div',{className:'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'},
-                                staff.map(s=>h('div',{key:s.id,className:'bg-white rounded-lg shadow p-4'},
-                                    h('div',{className:'flex justify-between items-start'},
-                                        h('div',{className:'flex-1'},
-                                            h('h3',{className:'font-semibold text-gray-800 text-lg'},s.name),
-                                            s.role&&h('p',{className:'text-sm text-gray-600 mt-1'},s.role),
-                                            s.phone&&h('p',{className:'text-sm text-gray-500 mt-2'},`📞 ${s.phone}`)),
-                                        h('div',{className:'flex gap-2'},
-                                            h('button',{onClick:()=>setEditStf(s),className:'text-blue-600 hover:text-blue-800 p-1'},
-                                                h(Icon,{name:'Edit2',size:18})),
-                                            h('button',{onClick:()=>confirm(t.deleteConfirmStaff)&&setStaff(staff.filter(x=>x.id!==s.id)),
-                                                className:'text-red-600 hover:text-red-800 p-1'},h(Icon,{name:'Trash2',size:18}))))))),
-                            staff.length===0&&!editStf&&h('div',{className:'text-center py-12 text-gray-500'},
-                                h(Icon,{name:'UserPlus',size:48,className:'mx-auto mb-4 opacity-50'}),
-                                h('p',{},t.noStaff))),
-                        view==='shifts' && h('div',{className:'space-y-4'},
-                            h('div',{className:'flex justify-between items-center'},
-                                h('h2',{className:'text-2xl font-bold text-gray-800'},t.shifts),
-                                h('button',{onClick:()=>setEditShf({id:Date.now().toString(),date:new Date().toISOString().split('T')[0],startTime:'08:00',endTime:'16:00',staffIds:[],notes:''}),
-                                    className:'bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-purple-700'},
-                                    h(Icon,{name:'Plus',size:20}),t.addShift)),
-                            staff.length===0&&h('div',{className:'bg-yellow-50 border border-yellow-200 rounded-lg p-4'},
-                                h('p',{className:'text-yellow-800'},t.needStaffFirst)),
-                            editShf && h('div',{className:'bg-white rounded-lg shadow p-6'},
-                                h('h3',{className:'text-lg font-semibold mb-4'},
-                                    `${shifts.find(s=>s.id===editShf.id)?t.editShift:t.newShift} ${t.shift}`),
-                                h('div',{className:'grid grid-cols-1 md:grid-cols-3 gap-4 mb-4'},
-                                    h('div',{},h('label',{className:'block text-sm font-medium text-gray-700 mb-1'},t.date),
-                                        h('input',{type:'date',value:editShf.date,onChange:e=>setEditShf({...editShf,date:e.target.value}),
-                                            className:'w-full border rounded-lg px-3 py-2'})),
-                                    h('div',{},h('label',{className:'block text-sm font-medium text-gray-700 mb-1'},t.startTime),
-                                        h('input',{type:'time',value:editShf.startTime,onChange:e=>setEditShf({...editShf,startTime:e.target.value}),
-                                            className:'w-full border rounded-lg px-3 py-2'})),
-                                    h('div',{},h('label',{className:'block text-sm font-medium text-gray-700 mb-1'},t.endTime),
-                                        h('input',{type:'time',value:editShf.endTime,onChange:e=>setEditShf({...editShf,endTime:e.target.value}),
-                                            className:'w-full border rounded-lg px-3 py-2'}))),
-                                h('div',{className:'mb-4'},
-                                    h('label',{className:'block text-sm font-medium text-gray-700 mb-2'},t.assignStaff),
-                                    h('div',{className:'grid grid-cols-1 md:grid-cols-2 gap-2'},
-                                        staff.map(s=>h('label',{key:s.id,className:'flex items-center gap-2 border rounded-lg p-3 cursor-pointer hover:bg-gray-50'},
-                                            h('input',{type:'checkbox',checked:editShf.staffIds.includes(s.id),
-                                                onChange:()=>setEditShf({...editShf,staffIds:editShf.staffIds.includes(s.id)?editShf.staffIds.filter(x=>x!==s.id):[...editShf.staffIds,s.id]}),
-                                                className:'w-4 h-4'}),
-                                            h('div',{},h('div',{className:'font-medium text-gray-800'},s.name),
-                                                s.role&&h('div',{className:'text-xs text-gray-500'},s.role)))))),
-                                h('div',{className:'mb-4'},
-                                    h('label',{className:'block text-sm font-medium text-gray-700 mb-1'},t.notes),
-                                    h('textarea',{value:editShf.notes,onChange:e=>setEditShf({...editShf,notes:e.target.value}),
-                                        className:'w-full border rounded-lg px-3 py-2',rows:3,placeholder:t.notesPlaceholder})),
-                                h('div',{className:'flex gap-2'},
-                                    h('button',{onClick:()=>{
-                                        setShifts(shifts.find(s=>s.id===editShf.id)?shifts.map(s=>s.id===editShf.id?editShf:s):[...shifts,editShf]);
-                                        setEditShf(null);
-                                    },className:'bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-700'},
-                                        h(Icon,{name:'Save',size:18}),t.save),
-                                    h('button',{onClick:()=>setEditShf(null),
-                                        className:'bg-gray-300 text-gray-700 px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-400'},
-                                        h(Icon,{name:'X',size:18}),t.cancel))),
-                            h('div',{className:'space-y-3'},
-                                shifts.sort((a,b)=>b.date.localeCompare(a.date)||a.startTime.localeCompare(b.startTime)).map(s=>
-                                    h('div',{key:s.id,className:'bg-white rounded-lg shadow p-4'},
-                                        h('div',{className:'flex justify-between items-start gap-3'},
-                                            h('div',{className:'flex-1'},
-                                                h('div',{className:'flex items-center gap-3 mb-2'},
-                                                    h('span',{className:'font-semibold text-gray-800'},
-                                                        new Date(s.date+'T00:00:00').toLocaleDateString(lang==='it'?'it-IT':'en-US',{weekday:'short',month:'short',day:'numeric'})),
-                                                    h('span',{className:'text-gray-600'},`${s.startTime} - ${s.endTime}`)),
-                                                h('div',{className:'text-sm text-gray-600'},
-                                                    `${t.staffLabel}: ${s.staffIds.length>0?s.staffIds.map(getStaffName).join(', '):t.noStaffAssigned}`),
-                                                s.notes&&h('div',{className:'text-sm text-gray-500 mt-2 italic'},s.notes)),
-                                            h('div',{className:'flex gap-2 flex-wrap justify-end'},
-                                                h('button',{onClick:()=>createICS(s),className:'bg-purple-100 text-purple-700 p-2 rounded-lg hover:bg-purple-200',title:t.sendCalendarInvite},
-                                                    h(Icon,{name:'CalendarPlus',size:18})),
-                                                h('button',{onClick:()=>setEditShf(s),className:'text-blue-600 hover:text-blue-800 p-2'},
-                                                    h(Icon,{name:'Edit2',size:18})),
-                                                h('button',{onClick:()=>confirm(t.deleteConfirmShift)&&setShifts(shifts.filter(x=>x.id!==s.id)),
-                                                    className:'text-red-600 hover:text-red-800 p-2'},h(Icon,{name:'Trash2',size:18}))))))),
-                            shifts.length===0&&!editShf&&h('div',{className:'text-center py-12 text-gray-500'},
-                                h(Icon,{name:'Calendar',size:48,className:'mx-auto mb-4 opacity-50'}),
-                                h('p',{},t.noShifts)))),
-                    h('div', { id: 'youtube-player', style: { display: 'none' } }),
-                    showInstallButton && h('button', {
-                        onClick: handleInstallClick,
-                        className: 'fixed bottom-36 left-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transition-all z-50 pulse',
-                        title: 'Install App'
+                            r.name
+                          ),
+                          r.room &&
+                            h(
+                              "p",
+                              { className: "text-sm text-gray-600 mt-1" },
+                              `${t.room}: ${r.room}`
+                            ),
+                          r.condition &&
+                            h(
+                              "p",
+                              { className: "text-sm text-gray-600" },
+                              `${t.condition}: ${r.condition}`
+                            ),
+                          r.specialNeeds &&
+                            h(
+                              "p",
+                              { className: "text-sm text-gray-500 mt-2" },
+                              r.specialNeeds
+                            )
+                        ),
+                        h(
+                          "div",
+                          { className: "flex gap-2" },
+                          h(
+                            "button",
+                            {
+                              onClick: () => setEditRes(r),
+                              className:
+                                "text-blue-600 hover:text-blue-800 p-1",
+                            },
+                            h(Icon, { name: "Edit2", size: 18 })
+                          ),
+                          h(
+                            "button",
+                            {
+                              onClick: () =>
+                                confirm(t.deleteConfirmResident) &&
+                                setResidents(
+                                  residents.filter((x) => x.id !== r.id)
+                                ),
+                              className: "text-red-600 hover:text-red-800 p-1",
+                            },
+                            h(Icon, { name: "Trash2", size: 18 })
+                          )
+                        )
+                      )
+                    )
+                  )
+                ),
+                residents.length === 0 &&
+                  !editRes &&
+                  h(
+                    "div",
+                    { className: "text-center py-12 text-gray-500" },
+                    h(Icon, {
+                      name: "Users",
+                      size: 48,
+                      className: "mx-auto mb-4 opacity-50",
+                    }),
+                    h("p", {}, t.noResidents)
+                  )
+              ),
+            view === "staff" &&
+              h(
+                "div",
+                { className: "space-y-4" },
+                h(
+                  "div",
+                  { className: "flex justify-between items-center" },
+                  h(
+                    "h2",
+                    { className: "text-2xl font-bold text-gray-800" },
+                    t.staff
+                  ),
+                  h(
+                    "button",
+                    {
+                      onClick: () =>
+                        setEditStf({
+                          id: Date.now().toString(),
+                          name: "",
+                          role: "",
+                          phone: "",
+                        }),
+                      className:
+                        "bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-purple-700",
                     },
-                        h(Icon, { name: 'Download', size: 24 })),
-                    h('button', {
-                        onClick: toggleMusic,
-                        className: 'fixed bottom-20 left-4 bg-gradient-to-r from-purple-500 to-pink-600 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transition-all z-50',
-                        title: isPlaying ? 'Pause music' : 'Play music'
+                    h(Icon, { name: "Plus", size: 20 }),
+                    t.addStaff
+                  )
+                ),
+                editStf &&
+                  h(
+                    "div",
+                    { className: "bg-white rounded-lg shadow p-6" },
+                    h(
+                      "h3",
+                      { className: "text-lg font-semibold mb-4" },
+                      `${
+                        staff.find((s) => s.id === editStf.id)
+                          ? t.editStaff
+                          : t.newStaff
+                      } ${t.staffMember}`
+                    ),
+                    h(
+                      "div",
+                      { className: "grid grid-cols-1 md:grid-cols-2 gap-4" },
+                      h(
+                        "div",
+                        {},
+                        h(
+                          "label",
+                          {
+                            className:
+                              "block text-sm font-medium text-gray-700 mb-1",
+                          },
+                          `${t.name} ${t.required}`
+                        ),
+                        h("input", {
+                          type: "text",
+                          value: editStf.name,
+                          onChange: (e) =>
+                            setEditStf({ ...editStf, name: e.target.value }),
+                          className: "w-full border rounded-lg px-3 py-2",
+                          placeholder: t.fullName,
+                        })
+                      ),
+                      h(
+                        "div",
+                        {},
+                        h(
+                          "label",
+                          {
+                            className:
+                              "block text-sm font-medium text-gray-700 mb-1",
+                          },
+                          t.role
+                        ),
+                        h("input", {
+                          type: "text",
+                          value: editStf.role,
+                          onChange: (e) =>
+                            setEditStf({ ...editStf, role: e.target.value }),
+                          className: "w-full border rounded-lg px-3 py-2",
+                          placeholder: t.rolePlaceholder,
+                        })
+                      ),
+                      h(
+                        "div",
+                        { className: "md:col-span-2" },
+                        h(
+                          "label",
+                          {
+                            className:
+                              "block text-sm font-medium text-gray-700 mb-1",
+                          },
+                          t.phone
+                        ),
+                        h("input", {
+                          type: "tel",
+                          value: editStf.phone,
+                          onChange: (e) =>
+                            setEditStf({ ...editStf, phone: e.target.value }),
+                          className: "w-full border rounded-lg px-3 py-2",
+                          placeholder: t.contactNumber,
+                        })
+                      )
+                    ),
+                    h(
+                      "div",
+                      { className: "flex gap-2 mt-4" },
+                      h(
+                        "button",
+                        {
+                          onClick: () => {
+                            if (!editStf.name.trim()) return alert(t.enterName);
+                            setStaff(
+                              staff.find((s) => s.id === editStf.id)
+                                ? staff.map((s) =>
+                                    s.id === editStf.id ? editStf : s
+                                  )
+                                : [...staff, editStf]
+                            );
+                            setEditStf(null);
+                          },
+                          className:
+                            "bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-700",
+                        },
+                        h(Icon, { name: "Save", size: 18 }),
+                        t.save
+                      ),
+                      h(
+                        "button",
+                        {
+                          onClick: () => setEditStf(null),
+                          className:
+                            "bg-gray-300 text-gray-700 px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-400",
+                        },
+                        h(Icon, { name: "X", size: 18 }),
+                        t.cancel
+                      )
+                    )
+                  ),
+                h(
+                  "div",
+                  {
+                    className:
+                      "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4",
+                  },
+                  staff.map((s) =>
+                    h(
+                      "div",
+                      {
+                        key: s.id,
+                        className: "bg-white rounded-lg shadow p-4",
+                      },
+                      h(
+                        "div",
+                        { className: "flex justify-between items-start" },
+                        h(
+                          "div",
+                          { className: "flex-1" },
+                          h(
+                            "h3",
+                            {
+                              className: "font-semibold text-gray-800 text-lg",
+                            },
+                            s.name
+                          ),
+                          s.role &&
+                            h(
+                              "p",
+                              { className: "text-sm text-gray-600 mt-1" },
+                              s.role
+                            ),
+                          s.phone &&
+                            h(
+                              "p",
+                              { className: "text-sm text-gray-500 mt-2" },
+                              `📞 ${s.phone}`
+                            )
+                        ),
+                        h(
+                          "div",
+                          { className: "flex gap-2" },
+                          h(
+                            "button",
+                            {
+                              onClick: () => setEditStf(s),
+                              className:
+                                "text-blue-600 hover:text-blue-800 p-1",
+                            },
+                            h(Icon, { name: "Edit2", size: 18 })
+                          ),
+                          h(
+                            "button",
+                            {
+                              onClick: () =>
+                                confirm(t.deleteConfirmStaff) &&
+                                setStaff(staff.filter((x) => x.id !== s.id)),
+                              className: "text-red-600 hover:text-red-800 p-1",
+                            },
+                            h(Icon, { name: "Trash2", size: 18 })
+                          )
+                        )
+                      )
+                    )
+                  )
+                ),
+                staff.length === 0 &&
+                  !editStf &&
+                  h(
+                    "div",
+                    { className: "text-center py-12 text-gray-500" },
+                    h(Icon, {
+                      name: "UserPlus",
+                      size: 48,
+                      className: "mx-auto mb-4 opacity-50",
+                    }),
+                    h("p", {}, t.noStaff)
+                  )
+              ),
+            view === "shifts" &&
+              h(
+                "div",
+                { className: "space-y-4" },
+                h(
+                  "div",
+                  { className: "flex justify-between items-center" },
+                  h(
+                    "h2",
+                    { className: "text-2xl font-bold text-gray-800" },
+                    t.shifts
+                  ),
+                  h(
+                    "button",
+                    {
+                      onClick: () =>
+                        setEditShf({
+                          id: Date.now().toString(),
+                          date: new Date().toISOString().split("T")[0],
+                          startTime: "08:00",
+                          endTime: "16:00",
+                          staffIds: [],
+                          notes: "",
+                        }),
+                      className:
+                        "bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-purple-700",
                     },
-                        h(Icon, { name: isPlaying ? 'Pause' : 'Headphones', size: 24 })),
-                    h('a', {
-                        href: 'https://wa.me/3519839210?text=Edu%2C%20aiuto%2C%20per%20favore!%20Non%20capisco...',
-                        target: '_blank',
-                        rel: 'noopener noreferrer',
-                        className: 'help-button bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-3 rounded-full shadow-2xl hover:shadow-3xl transition-all flex items-center gap-2 font-medium pulse'
+                    h(Icon, { name: "Plus", size: 20 }),
+                    t.addShift
+                  )
+                ),
+                staff.length === 0 &&
+                  h(
+                    "div",
+                    {
+                      className:
+                        "bg-yellow-50 border border-yellow-200 rounded-lg p-4",
                     },
-                        h('span', { className: 'text-2xl' }, '🐻'),
-                        h('svg', { className: 'w-6 h-6', viewBox: '0 0 24 24', fill: 'currentColor' },
-                            h('path', { d: 'M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z' })),
-                        h('span', { className: 'hidden sm:inline' }, t.helpButton)),
-                    showPwdModal && h(ChangePasswordModal, { onClose: () => setShowPwdModal(false), lang }));
-            }
+                    h("p", { className: "text-yellow-800" }, t.needStaffFirst)
+                  ),
+                editShf &&
+                  h(
+                    "div",
+                    { className: "bg-white rounded-lg shadow p-6" },
+                    h(
+                      "h3",
+                      { className: "text-lg font-semibold mb-4" },
+                      `${
+                        shifts.find((s) => s.id === editShf.id)
+                          ? t.editShift
+                          : t.newShift
+                      } ${t.shift}`
+                    ),
+                    h(
+                      "div",
+                      {
+                        className: "grid grid-cols-1 md:grid-cols-3 gap-4 mb-4",
+                      },
+                      h(
+                        "div",
+                        {},
+                        h(
+                          "label",
+                          {
+                            className:
+                              "block text-sm font-medium text-gray-700 mb-1",
+                          },
+                          t.date
+                        ),
+                        h("input", {
+                          type: "date",
+                          value: editShf.date,
+                          onChange: (e) =>
+                            setEditShf({ ...editShf, date: e.target.value }),
+                          className: "w-full border rounded-lg px-3 py-2",
+                        })
+                      ),
+                      h(
+                        "div",
+                        {},
+                        h(
+                          "label",
+                          {
+                            className:
+                              "block text-sm font-medium text-gray-700 mb-1",
+                          },
+                          t.startTime
+                        ),
+                        h("input", {
+                          type: "time",
+                          value: editShf.startTime,
+                          onChange: (e) =>
+                            setEditShf({
+                              ...editShf,
+                              startTime: e.target.value,
+                            }),
+                          className: "w-full border rounded-lg px-3 py-2",
+                        })
+                      ),
+                      h(
+                        "div",
+                        {},
+                        h(
+                          "label",
+                          {
+                            className:
+                              "block text-sm font-medium text-gray-700 mb-1",
+                          },
+                          t.endTime
+                        ),
+                        h("input", {
+                          type: "time",
+                          value: editShf.endTime,
+                          onChange: (e) =>
+                            setEditShf({ ...editShf, endTime: e.target.value }),
+                          className: "w-full border rounded-lg px-3 py-2",
+                        })
+                      )
+                    ),
+                    h(
+                      "div",
+                      { className: "mb-4" },
+                      h(
+                        "label",
+                        {
+                          className:
+                            "block text-sm font-medium text-gray-700 mb-2",
+                        },
+                        t.assignStaff
+                      ),
+                      h(
+                        "div",
+                        { className: "grid grid-cols-1 md:grid-cols-2 gap-2" },
+                        staff.map((s) =>
+                          h(
+                            "label",
+                            {
+                              key: s.id,
+                              className:
+                                "flex items-center gap-2 border rounded-lg p-3 cursor-pointer hover:bg-gray-50",
+                            },
+                            h("input", {
+                              type: "checkbox",
+                              checked: editShf.staffIds.includes(s.id),
+                              onChange: () =>
+                                setEditShf({
+                                  ...editShf,
+                                  staffIds: editShf.staffIds.includes(s.id)
+                                    ? editShf.staffIds.filter((x) => x !== s.id)
+                                    : [...editShf.staffIds, s.id],
+                                }),
+                              className: "w-4 h-4",
+                            }),
+                            h(
+                              "div",
+                              {},
+                              h(
+                                "div",
+                                { className: "font-medium text-gray-800" },
+                                s.name
+                              ),
+                              s.role &&
+                                h(
+                                  "div",
+                                  { className: "text-xs text-gray-500" },
+                                  s.role
+                                )
+                            )
+                          )
+                        )
+                      )
+                    ),
+                    h(
+                      "div",
+                      { className: "mb-4" },
+                      h(
+                        "label",
+                        {
+                          className:
+                            "block text-sm font-medium text-gray-700 mb-1",
+                        },
+                        t.notes
+                      ),
+                      h("textarea", {
+                        value: editShf.notes,
+                        onChange: (e) =>
+                          setEditShf({ ...editShf, notes: e.target.value }),
+                        className: "w-full border rounded-lg px-3 py-2",
+                        rows: 3,
+                        placeholder: t.notesPlaceholder,
+                      })
+                    ),
+                    h(
+                      "div",
+                      { className: "flex gap-2" },
+                      h(
+                        "button",
+                        {
+                          onClick: () => {
+                            setShifts(
+                              shifts.find((s) => s.id === editShf.id)
+                                ? shifts.map((s) =>
+                                    s.id === editShf.id ? editShf : s
+                                  )
+                                : [...shifts, editShf]
+                            );
+                            setEditShf(null);
+                          },
+                          className:
+                            "bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-700",
+                        },
+                        h(Icon, { name: "Save", size: 18 }),
+                        t.save
+                      ),
+                      h(
+                        "button",
+                        {
+                          onClick: () => setEditShf(null),
+                          className:
+                            "bg-gray-300 text-gray-700 px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-400",
+                        },
+                        h(Icon, { name: "X", size: 18 }),
+                        t.cancel
+                      )
+                    )
+                  ),
+                h(
+                  "div",
+                  { className: "space-y-3" },
+                  shifts
+                    .sort(
+                      (a, b) =>
+                        b.date.localeCompare(a.date) ||
+                        a.startTime.localeCompare(b.startTime)
+                    )
+                    .map((s) =>
+                      h(
+                        "div",
+                        {
+                          key: s.id,
+                          className: "bg-white rounded-lg shadow p-4",
+                        },
+                        h(
+                          "div",
+                          {
+                            className: "flex justify-between items-start gap-3",
+                          },
+                          h(
+                            "div",
+                            { className: "flex-1" },
+                            h(
+                              "div",
+                              { className: "flex items-center gap-3 mb-2" },
+                              h(
+                                "span",
+                                { className: "font-semibold text-gray-800" },
+                                new Date(
+                                  s.date + "T00:00:00"
+                                ).toLocaleDateString(
+                                  lang === "it" ? "it-IT" : "en-US",
+                                  {
+                                    weekday: "short",
+                                    month: "short",
+                                    day: "numeric",
+                                  }
+                                )
+                              ),
+                              h(
+                                "span",
+                                { className: "text-gray-600" },
+                                `${s.startTime} - ${s.endTime}`
+                              )
+                            ),
+                            h(
+                              "div",
+                              { className: "text-sm text-gray-600" },
+                              `${t.staffLabel}: ${
+                                s.staffIds.length > 0
+                                  ? s.staffIds.map(getStaffName).join(", ")
+                                  : t.noStaffAssigned
+                              }`
+                            ),
+                            s.notes &&
+                              h(
+                                "div",
+                                {
+                                  className:
+                                    "text-sm text-gray-500 mt-2 italic",
+                                },
+                                s.notes
+                              )
+                          ),
+                          h(
+                            "div",
+                            { className: "flex gap-2 flex-wrap justify-end" },
+                            h(
+                              "button",
+                              {
+                                onClick: () => createICS(s),
+                                className:
+                                  "bg-purple-100 text-purple-700 p-2 rounded-lg hover:bg-purple-200",
+                                title: t.sendCalendarInvite,
+                              },
+                              h(Icon, { name: "CalendarPlus", size: 18 })
+                            ),
+                            h(
+                              "button",
+                              {
+                                onClick: () => setEditShf(s),
+                                className:
+                                  "text-blue-600 hover:text-blue-800 p-2",
+                              },
+                              h(Icon, { name: "Edit2", size: 18 })
+                            ),
+                            h(
+                              "button",
+                              {
+                                onClick: () =>
+                                  confirm(t.deleteConfirmShift) &&
+                                  setShifts(
+                                    shifts.filter((x) => x.id !== s.id)
+                                  ),
+                                className:
+                                  "text-red-600 hover:text-red-800 p-2",
+                              },
+                              h(Icon, { name: "Trash2", size: 18 })
+                            )
+                          )
+                        )
+                      )
+                    )
+                ),
+                shifts.length === 0 &&
+                  !editShf &&
+                  h(
+                    "div",
+                    { className: "text-center py-12 text-gray-500" },
+                    h(Icon, {
+                      name: "Calendar",
+                      size: 48,
+                      className: "mx-auto mb-4 opacity-50",
+                    }),
+                    h("p", {}, t.noShifts)
+                  )
+              )
+          ),
+          h("div", { id: "youtube-player", style: { display: "none" } }),
+          showInstallButton &&
+            h(
+              "button",
+              {
+                onClick: handleInstallClick,
+                className:
+                  "fixed bottom-36 left-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transition-all z-50 pulse",
+                title: "Install App",
+              },
+              h(Icon, { name: "Download", size: 24 })
+            ),
+          h(
+            "button",
+            {
+              onClick: toggleMusic,
+              className:
+                "fixed bottom-20 left-4 bg-gradient-to-r from-purple-500 to-pink-600 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transition-all z-50",
+              title: isPlaying ? "Pause music" : "Play music",
+            },
+            h(Icon, { name: isPlaying ? "Pause" : "Headphones", size: 24 })
+          ),
+          h(
+            "a",
+            {
+              href: "https://wa.me/3519839210?text=Edu%2C%20aiuto%2C%20per%20favore!%20Non%20capisco...",
+              target: "_blank",
+              rel: "noopener noreferrer",
+              className:
+                "help-button bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-3 rounded-full shadow-2xl hover:shadow-3xl transition-all flex items-center gap-2 font-medium pulse",
+            },
+            h("span", { className: "text-2xl" }, "🐻"),
+            h(
+              "svg",
+              {
+                className: "w-6 h-6",
+                viewBox: "0 0 24 24",
+                fill: "currentColor",
+              },
+              h("path", {
+                d: "M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z",
+              })
+            ),
+            h("span", { className: "hidden sm:inline" }, t.helpButton)
+          ),
+          showPwdModal &&
+            h(ChangePasswordModal, {
+              onClose: () => setShowPwdModal(false),
+              lang,
+            })
+        );
+      }
 
-            render(h(App), document.getElementById('root'));
-        </script>
-    </body>
+      render(h(App), document.getElementById("root"));
+    </script>
+  </body>
 </html>
