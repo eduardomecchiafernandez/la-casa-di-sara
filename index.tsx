@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Home, Users, Calendar, UserPlus, Clock, Plus, Edit2, Trash2, Save, X, Languages } from 'lucide-react';
+import { Home, Users, Calendar, UserPlus, Clock, Plus, Edit2, Trash2, Save, X, Languages, CalendarPlus } from 'lucide-react';
 
 // Types
 interface Resident {
@@ -31,6 +31,7 @@ interface AppData {
   staff: Staff[];
   shifts: Shift[];
   language?: string;
+  showInstallBanner?: boolean;
 }
 
 // Translations
@@ -95,7 +96,10 @@ const translations = {
     unknown: 'Sconosciuto',
     installPrompt: '💡 Aggiungi questa app alla schermata Home del tuo iPhone per un accesso rapido!',
     installInstructions: 'In Safari: tocca il pulsante Condividi (quadrato con freccia) → "Aggiungi a Home"',
-    gotIt: 'Ho capito'
+    gotIt: 'Ho capito',
+    sendCalendarInvite: 'Invia Invito Calendario',
+    calendarInviteSent: 'Invito calendario creato!',
+    shiftAt: 'Turno presso'
   },
   en: {
     appTitle: 'Sara\'s Home',
@@ -157,7 +161,10 @@ const translations = {
     unknown: 'Unknown',
     installPrompt: '💡 Add this app to your iPhone Home Screen for quick access!',
     installInstructions: 'In Safari: tap the Share button (square with arrow) → "Add to Home Screen"',
-    gotIt: 'Got it'
+    gotIt: 'Got it',
+    sendCalendarInvite: 'Send Calendar Invite',
+    calendarInviteSent: 'Calendar invite created!',
+    shiftAt: 'Shift at'
   }
 };
 
@@ -253,6 +260,7 @@ const CareHomeManager: React.FC = () => {
         setStaff(data.staff || []);
         setShifts(data.shifts || []);
         setLanguage(data.language as 'it' | 'en' || 'it');
+        setShowInstallBanner(data.showInstallBanner !== false);
       }
     } catch (error) {
       console.log('No existing data, starting fresh');
@@ -263,7 +271,7 @@ const CareHomeManager: React.FC = () => {
 
   const saveData = async () => {
     try {
-      const data: AppData = { residents, staff, shifts, language };
+      const data: AppData = { residents, staff, shifts, language, showInstallBanner };
       await window.storage.set('care-home-data', JSON.stringify(data));
     } catch (error) {
       console.error('Error saving data:', error);
@@ -276,7 +284,7 @@ const CareHomeManager: React.FC = () => {
     if (!loading) {
       saveData();
     }
-  }, [residents, staff, shifts, language]);
+  }, [residents, staff, shifts, language, showInstallBanner]);
 
   // Resident functions
   const addResident = () => {
@@ -397,6 +405,78 @@ const CareHomeManager: React.FC = () => {
 
   const getStaffName = (staffId: string) => {
     return staff.find(s => s.id === staffId)?.name || t.unknown;
+  };
+
+  const createCalendarInvite = (shift: Shift) => {
+    // Get staff names
+    const staffNames = shift.staffIds.map(getStaffName).join(', ');
+    
+    // Format date and time for iCalendar
+    const startDateTime = new Date(`${shift.date}T${shift.startTime}:00`);
+    const endDateTime = new Date(`${shift.date}T${shift.endTime}:00`);
+    
+    const formatICalDate = (date: Date) => {
+      return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    };
+
+    // Create iCalendar content
+    const icsContent = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//La Casa di Sara//IT',
+      'CALSCALE:GREGORIAN',
+      'METHOD:REQUEST',
+      'BEGIN:VEVENT',
+      `DTSTART:${formatICalDate(startDateTime)}`,
+      `DTEND:${formatICalDate(endDateTime)}`,
+      `DTSTAMP:${formatICalDate(new Date())}`,
+      `UID:${shift.id}@lacasadisara.app`,
+      `SUMMARY:${t.shiftAt} La Casa di Sara`,
+      `DESCRIPTION:${t.staffLabel}: ${staffNames || t.noStaffAssigned}${shift.notes ? '\\n\\n' + shift.notes : ''}`,
+      'LOCATION:La Casa di Sara',
+      'STATUS:CONFIRMED',
+      'SEQUENCE:0',
+      'BEGIN:VALARM',
+      'TRIGGER:-PT1H',
+      'ACTION:DISPLAY',
+      'DESCRIPTION:Reminder',
+      'END:VALARM',
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ].join('\r\n');
+
+    // Create blob and download/share
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    
+    // Try to use Web Share API (works great on mobile)
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], 'turno.ics', { type: 'text/calendar' })] })) {
+      const file = new File([blob], 'turno.ics', { type: 'text/calendar' });
+      navigator.share({
+        files: [file],
+        title: `${t.shiftAt} La Casa di Sara`,
+        text: `${t.staffLabel}: ${staffNames || t.noStaffAssigned}`
+      }).then(() => {
+        alert(t.calendarInviteSent);
+      }).catch((error) => {
+        console.log('Share cancelled or failed', error);
+        downloadICS(blob);
+      });
+    } else {
+      // Fallback: download the file
+      downloadICS(blob);
+    }
+  };
+
+  const downloadICS = (blob: Blob) => {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'turno-casa-sara.ics';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    alert(t.calendarInviteSent);
   };
 
   if (loading) {
@@ -527,8 +607,8 @@ const CareHomeManager: React.FC = () => {
                 <div className="space-y-3">
                   {getTodayShifts().map(shift => (
                     <div key={shift.id} className="border border-gray-200 rounded-lg p-4">
-                      <div className="flex justify-between items-start">
-                        <div>
+                      <div className="flex justify-between items-start gap-3">
+                        <div className="flex-1">
                           <div className="font-semibold text-gray-800">
                             {shift.startTime} - {shift.endTime}
                           </div>
@@ -541,6 +621,14 @@ const CareHomeManager: React.FC = () => {
                             <div className="text-sm text-gray-500 mt-1">{shift.notes}</div>
                           )}
                         </div>
+                        <button
+                          onClick={() => createCalendarInvite(shift)}
+                          className="bg-purple-100 text-purple-700 px-3 py-2 rounded-lg flex items-center gap-2 hover:bg-purple-200 transition-colors text-sm whitespace-nowrap"
+                          title={t.sendCalendarInvite}
+                        >
+                          <CalendarPlus size={16} />
+                          <span className="hidden sm:inline">{t.sendCalendarInvite}</span>
+                        </button>
                       </div>
                     </div>
                   ))}
@@ -906,7 +994,7 @@ const CareHomeManager: React.FC = () => {
                 })
                 .map(shift => (
                   <div key={shift.id} className="bg-white rounded-lg shadow p-4">
-                    <div className="flex justify-between items-start">
+                    <div className="flex justify-between items-start gap-3">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
                           <span className="font-semibold text-gray-800">
@@ -929,16 +1017,23 @@ const CareHomeManager: React.FC = () => {
                           <div className="text-sm text-gray-500 mt-2 italic">{shift.notes}</div>
                         )}
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 flex-wrap justify-end">
+                        <button
+                          onClick={() => createCalendarInvite(shift)}
+                          className="bg-purple-100 text-purple-700 p-2 rounded-lg hover:bg-purple-200 transition-colors"
+                          title={t.sendCalendarInvite}
+                        >
+                          <CalendarPlus size={18} />
+                        </button>
                         <button
                           onClick={() => setEditingShift(shift)}
-                          className="text-blue-600 hover:text-blue-800 p-1"
+                          className="text-blue-600 hover:text-blue-800 p-2"
                         >
                           <Edit2 size={18} />
                         </button>
                         <button
                           onClick={() => deleteShift(shift.id)}
-                          className="text-red-600 hover:text-red-800 p-1"
+                          className="text-red-600 hover:text-red-800 p-2"
                         >
                           <Trash2 size={18} />
                         </button>
