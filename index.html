@@ -225,7 +225,7 @@
 
             const handleSubmit = (e) => {
                 e.preventDefault();
-                const stored = localStorage.getItem('casa-sara-pwd') || 'sara2024';
+                const stored = localStorage.getItem('casa-sara-pwd') || 'orsettotigre';
                 if (pwd === stored) {
                     onLogin();
                 } else {
@@ -257,7 +257,7 @@
                             className: 'w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors flex items-center justify-center gap-2'
                         }, h(Icon, { name: 'Lock', size: 20 }), t.login)),
                     h('p', { className: 'text-center text-xs text-gray-500 mt-6' }, 
-                        'Password predefinita: sara2024')));
+                        'Password predefinita: orsettotigre')));
         }
 
         function ChangePasswordModal({ onClose, lang }) {
@@ -269,7 +269,7 @@
 
             const handleSubmit = (e) => {
                 e.preventDefault();
-                const stored = localStorage.getItem('casa-sara-pwd') || 'sara2024';
+                const stored = localStorage.getItem('casa-sara-pwd') || 'orsettotigre';
                 
                 if (current !== stored) {
                     setError(t.wrongPassword);
